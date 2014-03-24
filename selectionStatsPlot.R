@@ -6,6 +6,7 @@
 # Load required libraries
 library(ggplot2)
 library(tools)
+library(reshape)
 
 # Read data from file provided by user
 args <- commandArgs(trailingOnly = TRUE)
@@ -43,5 +44,14 @@ ggplot(data, aes(x=TajimasD)) +
         ggtitle("Tajima's D Distribution")
 dev.off()
 
-# Plot MK tests
-
+# Plot Neutrality Index
+statNumber <- ncol(data)
+NI <- data[,c(1, seq(8, ncol(data), 2))]
+NI.m <- melt(NI)
+summary(NI.m$value)
+tiff(filename = paste(fileBase, "_NI.tiff", sep = ""), 
+        width = 480, height = 5000)
+ggplot(NI.m, aes(variable, Alignment)) +
+        geom_tile(aes(fill = value), colour = "white") + 
+        scale_fill_gradient2(limits=c(-1,1))
+dev.off()
