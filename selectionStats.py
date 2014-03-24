@@ -41,7 +41,6 @@ def usage():
         -o <'list, of, outgroups'>"
 
 def calc_stats(alignment, og, outgroup):
-    print alignment
     statDict = {}
     if og:
         for o in outgroup:
@@ -63,6 +62,7 @@ def calc_stats(alignment, og, outgroup):
             statDict['piN'] = polyDictBPP['PiNS']
             statDict['piS'] = polyDictBPP['PiS']
             statDict['MK_'+o] = polyDictBPP['MK']
+            statDict['NI_'+o] = polyDictBPP['NI']
     else:
         a = egglib.Align(alignment)
         for i in range(a.ns()):
@@ -83,6 +83,7 @@ def write_outfile(alignDict, og, outgroup):
     if og:
         for o in outgroup:
             outfile.write('\tMK_' + o)
+            outfile.write('\tNI_' + o)
     outfile.write('\n')
     for a in alignDict:
         s = alignDict[a]
@@ -91,6 +92,7 @@ def write_outfile(alignDict, og, outgroup):
         if og:
             for o in outgroup:
                 outfile.write('\t' + str(s['MK_' + o]))
+                outfile.write('\t' + str(s['NI_' + o]))
         outfile.write('\n')
     outfile.close()
 
@@ -104,7 +106,6 @@ if outgroup is not None:
     outgroup = outgroup.split(', ')
 
 alignDict = {}
-i = 0
 # Check if alignment or directory was given and calculate stats accordingly
 if alignment is None:
     if directory is None:
@@ -112,8 +113,6 @@ if alignment is None:
         sys.exit()
     else:
         for align in glob.glob(directory + '*.fasta'):
-            print i
-            i += 1
             alignName = os.path.splitext(align)[0].replace(directory, "")
             alignDict[alignName] = calc_stats(align, og, outgroup)
 
