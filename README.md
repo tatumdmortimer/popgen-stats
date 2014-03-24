@@ -12,4 +12,12 @@ Current Versions: Python v 2.7.3, EggLib v 2.1.7, Bio++ v 2.1.0
 Usage:
 selectionStats.py -a [alignment] -d [directory] -o ["list, of, outgroups"]
 
+##selectionStatsPlot.R
+This script plots the results of selectionStats.py
 
+Requirements: ggplot2 (http://ggplot2.org/)
+
+Current Versions: R v 3.0.2, ggplot2 v 0.9.3.1
+
+Usage:
+selectionStatsPlot.R [input filename]
