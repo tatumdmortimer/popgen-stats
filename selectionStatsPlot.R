@@ -56,3 +56,10 @@ ggplot(NI.m, aes(variable, Alignment)) +
         geom_tile(aes(fill = value), colour = "white") + 
         scale_fill_gradient2(trans = 'log')
 dev.off()
+tiff(filename = paste(fileBase, "_NIHistogram.tiff", sep = "")) 
+ggplot(NI.m, aes(x=value)) + 
+        geom_histogram() + 
+        scale_x_log10() +
+        ggtitle("Neutrality Index Distribution")
+dev.off()
+
