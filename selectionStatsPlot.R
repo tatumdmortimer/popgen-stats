@@ -48,10 +48,11 @@ dev.off()
 statNumber <- ncol(data)
 NI <- data[,c(1, seq(8, ncol(data), 2))]
 NI.m <- melt(NI)
+NI.m <- NI.m[ which(NI.m$value > 0 & NI.m$variable != 'NI_SRS000032'),]
 summary(NI.m$value)
 tiff(filename = paste(fileBase, "_NI.tiff", sep = ""), 
         width = 480, height = 5000)
 ggplot(NI.m, aes(variable, Alignment)) +
         geom_tile(aes(fill = value), colour = "white") + 
-        scale_fill_gradient2(limits=c(-1,1))
+        scale_fill_gradient2(trans = 'log')
 dev.off()
