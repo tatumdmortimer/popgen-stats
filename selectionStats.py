@@ -68,28 +68,26 @@ def calc_stats(alignment, og, outgroup):
         for i in range(a.ns()):
              a.sequence(i, sequence=a.sequence(i).upper())
         polyDict = a.polymorphism()
-        polyDictBPP = a.polymorphismBPP(dataType=4)
         statDict['theta'] = polyDict['thetaW']
         statDict['pi'] = polyDict['Pi']
         statDict['tajimaD'] = polyDict['D']
-        statDict['piN'] = polyDictBPP['PiNS']
-        statDict['piS'] = polyDictBPP['PiS']
        
     return statDict
 
 def write_outfile(alignDict, og, outgroup):
     outfile = open('selectionStats.txt', 'w')
-    outfile.write('Alignment\tTheta\tPi\tPiN\tPiS\tTajimasD')
+    outfile.write('Alignment\tTheta\tPi\tTajimasD')
     if og:
+        outfile.write('\tPiN\tPiS')
         for o in outgroup:
             outfile.write('\tMK_' + o)
             outfile.write('\tNI_' + o)
     outfile.write('\n')
     for a in alignDict:
         s = alignDict[a]
-        outfile.write('%s\t%s\t%s\t%s\t%s\t%s' % (a, s['theta'],s['pi'],s['piN'],
-                                                s['piS'],s['tajimaD']))
+        outfile.write('%s\t%s\t%s\t%s' % (a, s['theta'],s['pi'], s['tajimaD']))
         if og:
+            outfile.write('\t%s\t%s' % (s['piN'], s['piS']))
             for o in outgroup:
                 outfile.write('\t' + str(s['MK_' + o]))
                 outfile.write('\t' + str(s['NI_' + o]))
