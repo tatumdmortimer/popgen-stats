@@ -21,3 +21,13 @@ Current Versions: R v 3.0.2, ggplot2 v 0.9.3.1
 
 Usage:
 selectionStatsPlot.R [input filename]
+
+##slidingWindowStats.py
+This calculates theta, pi, and Tajima's D in a sliding window across an alignment. A default window size of 1000 bp and window step of 300 bp is used unless otherwise specified by the user.
+
+Requirements: EggLib 
+
+Current Versions: Python 2.7.3, EggLib 2.1.7
+
+Usage:
+slidingWindowStats.py -a [alignment] -w [window width (default 1000)] -s [window step (default 300)]
