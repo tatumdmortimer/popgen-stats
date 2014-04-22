@@ -25,7 +25,7 @@ def get_arguments(argv):
             alignment = arg
         elif opt == '-w':
             winWidth = int(arg) 
-        elif opt == '-o':
+        elif opt == '-s':
             winStep = int(arg)
     return (alignment, winWidth, winStep)
 
