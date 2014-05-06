@@ -45,13 +45,21 @@ def calc_stats(alignment, og, outgroup):
     if og:
         for o in outgroup:
             a = egglib.Align(alignment)
+            a = a.extract(0, len(a.sequence(1)) - 3) # remove stop codon
+            if len(a.sequence(1))%3 != 0:
+                break
             otherOutgroups = outgroup[:]
             otherOutgroups.remove(o)
             for otherOutgroup in otherOutgroups: 
                 index = a.find(otherOutgroup, strict=False)
                 if index != None:
                     del a[index]
-            a.group(a.find(o, strict = False), group=999)
+            try:
+                a.group(a.find(o, strict = False), group=999)
+            except IndexError:
+                print("The following outgroup is not present in alignment")
+                print(o, a.find(o, strict = False))
+                sys.exit()
             for i in range(a.ns()):
                 a.sequence(i, sequence=a.sequence(i).upper())
             polyDict = a.polymorphism()
@@ -85,6 +93,9 @@ def write_outfile(alignDict, og, outgroup):
     outfile.write('\n')
     for a in alignDict:
         s = alignDict[a]
+        if len(s) == 0:
+            print a, " is not in frame"
+            continue
         outfile.write('%s\t%s\t%s\t%s' % (a, s['theta'],s['pi'], s['tajimaD']))
         if og:
             outfile.write('\t%s\t%s' % (s['piN'], s['piS']))
