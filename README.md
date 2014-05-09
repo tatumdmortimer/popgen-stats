@@ -31,3 +31,13 @@ Current Versions: Python 2.7.3, EggLib 2.1.7
 
 Usage:
 slidingWindowStats.py -a [alignment] -w [window width (default 1000)] -s [window step (default 300)]
+
+##genewisePAML.py
+This script runs codeml analysis from PAML on an alignment or directory of alignments. It compares the likelihood of the M1a (nearly neutral) and M2a (positive selection) models. Genes with a significant Likelihood Ratio Test are output to a file called pamlResults.txt.
+
+Requirements: EggLib, PAML, Biopython. Phylip
+
+Current Versions; Python 2.7.3, EggLib 2.1.7, Biopython 1.63, PAML 4.8, Phylip 3.6
+
+Usage:
+genewisePAML.py -a [alignment] -d [directory]
