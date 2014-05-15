@@ -49,9 +49,13 @@ def calc_tree(alignment):
     return (a, tree)
 
 def run_paml(a, tree, alignName, outfile):
-    codemlInstance = wrappers.Codeml(a, tree)
-    neutral = codemlInstance.fit("M1a")
-    positive = codemlInstance.fit("M2a")
+    try:
+        codemlInstance = wrappers.Codeml(a, tree)
+        neutral = codemlInstance.fit("M1a")
+        positive = codemlInstance.fit("M2a")
+    except ValueError, e:
+        print (alignName, e)
+        return
     fitDict = {}
     n = True
     LRTstat = 2*(positive["lnL"] - neutral["lnL"])
