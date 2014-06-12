@@ -48,7 +48,7 @@ def calc_tree(alignment):
     tree, loglk = wrappers.phyml(a)
     return (a, tree)
 
-def run_paml(a, tree, alignName, outfile):
+def run_paml(a, tree, alignName, outfile, neutralFile):
     try:
         codemlInstance = wrappers.Codeml(a, tree)
         neutral = codemlInstance.fit("M1a")
@@ -65,23 +65,30 @@ def run_paml(a, tree, alignName, outfile):
             n = False
     if not n:
         outfile.write("%s\t%f\n" % (alignName, p))
+    else:
+        neutralFile.write("%s\t%f\n" % (alignName, p))
        
     
 alignment, directory = get_arguments(sys.argv[1:])
 alignDict = {}
 # Check if alignment or directory was given and calculate stats accordingly
-outfile = open("pamlResults.txt", "w")
+outfile = open("pamlResults_significant.txt", "w")
+neutralFile = open("pamlResults_neutral.txt", "w")
 if alignment is None:
     if directory is None:
         usage()
         sys.exit()
     else:
-        for align in glob.glob(directory + '*.fasta'):
+        totalAlign = len(glob.glob(directory + '*.fasta'))
+        for i,align in enumerate(glob.glob(directory + '*.fasta')):
             alignName = os.path.splitext(align)[0].replace(directory, "")
             a, tree = calc_tree(align)
             if tree is None:
                 continue
-            run_paml(a, tree, alignName, outfile)
+            run_paml(a, tree, alignName, outfile, neutralFile)
+            percentageDone = 100*(float(i)/totalAlign)
+            if i%100 == 0:
+                print "Analysis is %f complete" % (percentageDone)
 
 elif alignment is not None:
     if directory is not None:
@@ -93,6 +100,7 @@ elif alignment is not None:
         a, tree = calc_tree(alignment)
         if tree is None:
             print ("This alignment does not have a tree")
-        run_paml(a, tree, alignName, outfile)
+        run_paml(a, tree, alignName, outfile, neutralFile)
 
 outfile.close()
+neutralFile.close()
