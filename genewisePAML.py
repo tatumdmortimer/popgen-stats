@@ -63,10 +63,10 @@ def run_paml(a, tree, alignName, outfile, neutralFile):
         p = cdf_chi2(2, LRTstat)
         if p < 0.05:
             n = False
-    if not n:
-        outfile.write("%s\t%f\n" % (alignName, p))
-    else:
-        neutralFile.write("%s\t%f\n" % (alignName, p))
+        if not n:
+            outfile.write("%s\t%f\n" % (alignName, p))
+        else:
+            neutralFile.write("%s\t%f\n" % (alignName, p))
        
     
 alignment, directory = get_arguments(sys.argv[1:])
@@ -87,8 +87,12 @@ if alignment is None:
                 continue
             run_paml(a, tree, alignName, outfile, neutralFile)
             percentageDone = 100*(float(i)/totalAlign)
-            if i%100 == 0:
-                print "Analysis is %f complete" % (percentageDone)
+            if i%10 >= 0 and i%10 <= 1:
+                print "Analysis is %f percent complete" % (percentageDone)
+                outfile.flush()
+                os.fsync(outfile)
+                neutralFile.flush()
+                os.fsync(neutralFile)
 
 elif alignment is not None:
     if directory is not None:
