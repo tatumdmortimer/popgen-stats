@@ -61,7 +61,7 @@ def calc_freqs(vcfFile, numStrains):
 def write_outfile(s, ns):
     outfile = open("sfs.txt", "w")
     outfile.write("Frequency\tSynonymous\tNonsynonymous\tCombined\n")
-    for i in range(len(s)-1):
+    for i in range(len(s)):
        outfile.write("%i\t%i\t%i\t%i\n" % (i+1, s[i], ns[i], s[i] + ns[i])) 
 
 vcfFile, numStrains = get_arguments(sys.argv[1:])
