@@ -10,6 +10,18 @@ import dadi
 def usage():
     print "dadiAnalysis.py <input file>"
 
+def likelihood_grid(function, data, ns, pts_l):
+    outfile = open("likelihood_grid.txt", "w")
+    outfile.write("nu\tT\tLL\n")
+    for T in numpy.arange(0.001, 10, .1):
+        for nu in numpy.arange(0.001, 10, .1):
+            params = array([nu, T])
+            model = function(params, ns, pts_l)
+            ll = dadi.Inference.ll_multinom(model, data)
+            outfile.write("%f\t%f\t%f\n" % (nu, T, ll))
+    outfile.close()
+
+
 if len(sys.argv) != 2:
     usage()
     sys.exit()
@@ -96,6 +108,19 @@ growth_model = growth_func_ex(growth_popt, ns, pts_l)
 growth_ll_opt = dadi.Inference.ll_multinom(growth_model, data)
 print "Optimized log-likelihood:", growth_ll_opt
 
+# Output SFS for data
+data_sfs_file = open("observedSFS.txt", "w")
+for i in range(1,len(data)-1):
+    data_sfs_file.write(str(data[i]) + '\n')
+data_sfs_file.close()
+
+# Output SFS for neutral model
+neutral_sfs = dadi.Inference.optimally_scaled_sfs(neutral_model, data)
+neutral_sfs_file = open("neutralModelSFS.txt", 'w')
+for i in range(1,len(neutral_sfs)-1):
+    neutral_sfs_file.write(str(neutral_sfs[i]) + '\n')
+neutral_sfs_file.close()
+
 if expansion_ll > growth_ll:
     print "Testing significance of expansion..."
     LRTstat = 2*(expansion_ll - neutral_ll)
@@ -103,6 +128,15 @@ if expansion_ll > growth_ll:
     print "LRT Statistic:", LRTstat
     p = cdf_chi2(degrees, LRTstat)
     print "p-value=",p
+    if p < 0.05:
+        expansion_sfs = dadi.Inference.optimally_scaled_sfs(expansion_model, data)
+        expansion_sfs_file = open("expansionModelSFS.txt", 'w')
+        for i in range(1,len(expansion_sfs)-1):
+            expansion_sfs_file.write(str(expansion_sfs[i]) + '\n')
+        expansion_sfs_file.close()
+
+        print "Working on likelihood surface..."
+        likelihood_grid(expansion_func_ex, data, ns, pts_l)
 
 else:
     print "Testing significance of exponential growth..."
@@ -111,4 +145,13 @@ else:
     print "LRT Statistic:", LRTstat
     p = cdf_chi2(degrees, LRTstat)
     print "p-value=",p
+    if p < 0.05:
+        growth_sfs = dadi.Inference.optimally_scaled_sfs(growth_model, data)
+        growth_sfs_file = open("growthModelSFS.txt", 'w')
+        for i in range(1,len(growth_sfs)-1):
+            growth_sfs_file.write(str(growth_sfs[i]) + '\n')
+        growth_sfs_file.close()
+
+        print "Working on likelihood surface..."
+        likelihood_grid(growth_func_ex, data, ns, pts_l)
 
