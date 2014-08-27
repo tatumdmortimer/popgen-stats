@@ -27,7 +27,7 @@ This calculates theta, pi, and Tajima's D in a sliding window across an alignmen
 
 Requirements: EggLib 
 
-Current Versions: Python 2.7.3, EggLib 2.1.7
+Current Versions: Python 2.7.6, EggLib 2.1.7
 
 Usage:
 slidingWindowStats.py -a [alignment] -w [window width (default 1000)] -s [window step (default 300)]
@@ -37,7 +37,83 @@ This script runs codeml analysis from PAML on an alignment or directory of align
 
 Requirements: EggLib, PAML, Biopython. Phylip
 
-Current Versions; Python 2.7.3, EggLib 2.1.7, Biopython 1.63, PAML 4.8, Phylip 3.6
+Current Versions: Python 2.7.6, EggLib 2.1.7, Biopython 1.63, PAML 4.8, Phylip 3.6
 
 Usage:
 genewisePAML.py -a [alignment] -d [directory]
+
+##BSP.R
+This script plots the Bayesian Skyline Plot data that can be exported from
+Tracer
+
+Requirements: ggplot2
+
+Current Versions: R 3.1.0, ggplot2 1.0.0
+
+Usage:
+BSP.R [BSP data file]
+
+##createEBSPxml.py
+This script creates the input xml file for BEAST v 1.8 from a directory of 
+fasta alignments for an Extended Bayesian Skyline Plot analysis. Currently uses
+a strict clock and GTR+Gamma+I subsitution model.
+
+Requirements: Biopython
+
+Current Versions: Python 2.7.6, Biopython 1.63
+
+Usage:
+createEBSPxml.py [directory] [prefix for files]
+
+##LRT.py
+This script performs a likelihood ratio test given two likelihoods and degrees
+of freedom.
+
+Requirements: Biopython
+
+Current Versions: Python 2.7.6, Biopython 1.63
+
+Usage:
+LRT.py [likelihood 1] [likelihood 2] [degrees of freedom]
+
+##dadiAnalysis.py
+This script uses dadi to perform demographic analysis on a site frequency 
+spectrum. Test standard neutral model, expansion model, and exponential growth
+model. 
+
+Requirements: Biopython, NumPy, dadi (code.google.com/p/dadi)
+
+Current Versions: Python 2.7.6, Biopython 1.63, NumPy 1.6.1, dadi 1.6.3
+
+Usage:
+dadiAnalysis.py [input SFS]
+
+##plot_dadi_SFS.R
+Plots the SFS results from dadiAnalysis.py
+
+Requirements: ggplot2
+
+Current Versions: R 3.1.0, ggplot2 1.0.0
+
+Usage:
+plot_dadi_SFS.R
+
+##siteFrequencySpectra.py
+Reads vcf that has been annotated with snpEff. The outgroup should be the
+reference sequence in the VCF. Outputs synonymous, nonsynonymous, and combined
+site frequency spectra.
+
+Current Versions: Python 2.7.6
+
+Usage:
+siteFrequencySpectra.py -v [VCF] -n [number of strains without outgroup]
+
+##siteFrequencySpectrum.R
+Outputs unfolded site frequency spectrum given an alignment and outgroup.
+
+Requirements: PopGenome, ggplot2
+
+Current Versions: R 3.1.0, ggplot2 1.0.0, PopGenome 2.0.8
+
+Usage:
+siteFrequencySpectrum.R [directory containing alignment]
