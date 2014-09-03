@@ -437,7 +437,7 @@ out_xml.write("\t\t<logFileName>\n\t\t\t%s.log\n\t\t</logFileName>\n" % prefix)
 out_xml.write("\t\t<treeFileNames>\n")
 for t in alignmentNames:
     out_xml.write("\t\t\t<treeOfLoci>\n")
-    out_xml.write("\t\t\t\t%s.trees\n" % t)
+    out_xml.write("\t\t\t\t%s.%s.trees\n" % (prefix,t))
     out_xml.write("\t\t\t</treeOfLoci>\n")
 out_xml.write("\t\t</treeFileNames>\n")
 out_xml.write("\t\t<populationModelType>\n")
