@@ -147,8 +147,53 @@ lower=\"0.0\"/>\n" % aName)
 
 # write substitution and site models to xml file
 out_xml.write("\n")
+# for alignName in alignmentNames:
+#     out_xml.write("\t<gtrModel id=\"%s.gtr\">\n" % alignName)
+#     out_xml.write("\t\t<frequencies>\n")
+#     out_xml.write("\t\t\t<frequencyModel dataType=\"nucleotide\">\n")
+#     out_xml.write("\t\t\t\t<frequencies>\n")
+#     out_xml.write("\t\t\t\t\t<parameter id=\"%s.frequencies\" value=\"0.25 \
+# 0.25 0.25 0.25\"/>\n" % alignName)
+#     out_xml.write("\t\t\t\t</frequencies>\n")
+#     out_xml.write("\t\t\t</frequencyModel>\n")
+#     out_xml.write("\t\t</frequencies>\n")
+#     out_xml.write("\t\t<rateAC>\n")
+#     out_xml.write("\t\t\t<parameter id=\"%s.ac\" value=\"1.0\" \
+# lower=\"0.0\"/>\n" % alignName)
+#     out_xml.write("\t\t</rateAC>\n")
+#     out_xml.write("\t\t<rateAG>\n")
+#     out_xml.write("\t\t\t<parameter id=\"%s.ag\" value=\"1.0\" \
+# lower=\"0.0\"/>\n" % alignName)
+#     out_xml.write("\t\t</rateAG>\n")
+#     out_xml.write("\t\t<rateAT>\n")
+#     out_xml.write("\t\t\t<parameter id=\"%s.at\" value=\"1.0\" \
+# lower=\"0.0\"/>\n" % alignName)
+#     out_xml.write("\t\t</rateAT>\n")
+#     out_xml.write("\t\t<rateCG>\n")
+#     out_xml.write("\t\t\t<parameter id=\"%s.cg\" value=\"1.0\" \
+# lower=\"0.0\"/>\n" % alignName)
+#     out_xml.write("\t\t</rateCG>\n")
+#     out_xml.write("\t\t<rateGT>\n")
+#     out_xml.write("\t\t\t<parameter id=\"%s.gt\" value=\"1.0\" \
+# lower=\"0.0\"/>\n" % alignName)
+#     out_xml.write("\t\t</rateGT>\n")
+#     out_xml.write("\t</gtrModel>\n")
+#     out_xml.write("\t<siteModel  id=\"%s.siteModel\">\n" % alignName)
+#     out_xml.write("\t\t<substitutionModel>\n")
+#     out_xml.write("\t\t\t<gtrModel idref=\"%s.gtr\"/>\n" % alignName)
+#     out_xml.write("\t\t</substitutionModel>\n")
+#     out_xml.write("\t\t<gammaShape gammaCategories=\"4\">\n")
+#     out_xml.write("\t\t\t<parameter id=\"%s.alpha\" value=\"0.5\" \
+# lower=\"0.0\"/>\n" % alignName)
+#     out_xml.write("\t\t</gammaShape>\n")
+#     out_xml.write("\t\t<proportionInvariant>\n")
+#     out_xml.write("\t\t\t<parameter id=\"%s.pInv\" value=\"0.5\" \
+# lower=\"0.0\" upper=\"1.0\"/>\n" % alignName)
+#     out_xml.write("\t\t</proportionInvariant>\n")
+#     out_xml.write("\t</siteModel>\n")
+
 for alignName in alignmentNames:
-    out_xml.write("\t<gtrModel id=\"%s.gtr\">\n" % alignName)
+    out_xml.write("\t<HKYModel id=\"%s.hky\">\n" % alignName)
     out_xml.write("\t\t<frequencies>\n")
     out_xml.write("\t\t\t<frequencyModel dataType=\"nucleotide\">\n")
     out_xml.write("\t\t\t\t<frequencies>\n")
@@ -157,30 +202,14 @@ for alignName in alignmentNames:
     out_xml.write("\t\t\t\t</frequencies>\n")
     out_xml.write("\t\t\t</frequencyModel>\n")
     out_xml.write("\t\t</frequencies>\n")
-    out_xml.write("\t\t<rateAC>\n")
-    out_xml.write("\t\t\t<parameter id=\"%s.ac\" value=\"1.0\" \
+    out_xml.write("\t\t<kappa>\n")
+    out_xml.write("\t\t\t<parameter id=\"%s.kappa\" value=\"2.0\" \
 lower=\"0.0\"/>\n" % alignName)
-    out_xml.write("\t\t</rateAC>\n")
-    out_xml.write("\t\t<rateAG>\n")
-    out_xml.write("\t\t\t<parameter id=\"%s.ag\" value=\"1.0\" \
-lower=\"0.0\"/>\n" % alignName)
-    out_xml.write("\t\t</rateAG>\n")
-    out_xml.write("\t\t<rateAT>\n")
-    out_xml.write("\t\t\t<parameter id=\"%s.at\" value=\"1.0\" \
-lower=\"0.0\"/>\n" % alignName)
-    out_xml.write("\t\t</rateAT>\n")
-    out_xml.write("\t\t<rateCG>\n")
-    out_xml.write("\t\t\t<parameter id=\"%s.cg\" value=\"1.0\" \
-lower=\"0.0\"/>\n" % alignName)
-    out_xml.write("\t\t</rateCG>\n")
-    out_xml.write("\t\t<rateGT>\n")
-    out_xml.write("\t\t\t<parameter id=\"%s.gt\" value=\"1.0\" \
-lower=\"0.0\"/>\n" % alignName)
-    out_xml.write("\t\t</rateGT>\n")
-    out_xml.write("\t</gtrModel>\n")
+    out_xml.write("\t\t</kappa>\n")
+    out_xml.write("\t</HKYModel>\n")
     out_xml.write("\t<siteModel  id=\"%s.siteModel\">\n" % alignName)
     out_xml.write("\t\t<substitutionModel>\n")
-    out_xml.write("\t\t\t<gtrModel idref=\"%s.gtr\"/>\n" % alignName)
+    out_xml.write("\t\t\t<HKYModel idref=\"%s.hky\"/>\n" % alignName)
     out_xml.write("\t\t</substitutionModel>\n")
     out_xml.write("\t\t<gammaShape gammaCategories=\"4\">\n")
     out_xml.write("\t\t\t<parameter id=\"%s.alpha\" value=\"0.5\" \
@@ -191,7 +220,6 @@ lower=\"0.0\"/>\n" % alignName)
 lower=\"0.0\" upper=\"1.0\"/>\n" % alignName)
     out_xml.write("\t\t</proportionInvariant>\n")
     out_xml.write("\t</siteModel>\n")
-
 
 # write tree likelihood to xml file
 
@@ -211,8 +239,18 @@ useAmbiguities=\"false\">\n" % alName)
 out_xml.write("\n")
 out_xml.write("\t<operators id=\"operators\" \
 optimizationSchedule=\"default\">\n")
+# for b in alignmentNames:
+#     for c in ["ac", "ag", "at", "cg", "gt", "alpha", "pInv"]:
+#         out_xml.write("\t\t<scaleOperator scaleFactor=\"0.75\" \
+# weight=\"0.1\">\n")
+#         out_xml.write("\t\t\t<parameter idref=\"%s.%s\"/>\n" % (b,c))
+#         out_xml.write("\t\t</scaleOperator>\n")
+#     out_xml.write("\t\t<deltaExchange delta=\"0.01\" weight=\"0.1\">\n")
+#     out_xml.write("\t\t\t<parameter idref=\"%s.frequencies\"/>\n" % b)
+#     out_xml.write("\t\t</deltaExchange>\n")
+
 for b in alignmentNames:
-    for c in ["ac", "ag", "at", "cg", "gt", "alpha", "pInv"]:
+    for c in ["alpha", "pInv", "kappa"]:
         out_xml.write("\t\t<scaleOperator scaleFactor=\"0.75\" \
 weight=\"0.1\">\n")
         out_xml.write("\t\t\t<parameter idref=\"%s.%s\"/>\n" % (b,c))
@@ -220,6 +258,7 @@ weight=\"0.1\">\n")
     out_xml.write("\t\t<deltaExchange delta=\"0.01\" weight=\"0.1\">\n")
     out_xml.write("\t\t\t<parameter idref=\"%s.frequencies\"/>\n" % b)
     out_xml.write("\t\t</deltaExchange>\n")
+
 for d in alignmentNames:
     out_xml.write("\t\t<scaleOperator scaleFactor=\"0.75\" weight=\"3\">\n")
     out_xml.write("\t\t\t<parameter idref=\"%s.clock.rate\"/>\n" % d)
@@ -300,27 +339,42 @@ out_xml.write("\t<mcmc id=\"mcmc\" chainLength=\"100000000\" \
 autoOptimize=\"true\" operatorAnalysis=\"%s.ops\">\n" % prefix)
 out_xml.write("\t\t<posterior id=\"posterior\">\n")
 out_xml.write("\t\t\t<prior id=\"prior\">\n")
+# for k in alignmentNames:
+#     out_xml.write("\t\t\t\t<gammaPrior shape=\"0.05\" scale=\"10.0\" \
+# offset=\"0.0\">\n")
+#     out_xml.write("\t\t\t\t\t<parameter idref=\"%s.ac\"/>\n" % k)
+#     out_xml.write("\t\t\t\t</gammaPrior>\n")
+#     out_xml.write("\t\t\t\t<gammaPrior shape=\"0.05\" scale=\"20.0\" \
+# offset=\"0.0\">\n")
+#     out_xml.write("\t\t\t\t\t<parameter idref=\"%s.ag\"/>\n" % k)
+#     out_xml.write("\t\t\t\t</gammaPrior>\n")
+#     out_xml.write("\t\t\t\t<gammaPrior shape=\"0.05\" scale=\"10.0\" \
+# offset=\"0.0\">\n")
+#     out_xml.write("\t\t\t\t\t<parameter idref=\"%s.at\"/>\n" % k)
+#     out_xml.write("\t\t\t\t</gammaPrior>\n")
+#     out_xml.write("\t\t\t\t<gammaPrior shape=\"0.05\" scale=\"10.0\" \
+# offset=\"0.0\">\n")
+#     out_xml.write("\t\t\t\t\t<parameter idref=\"%s.cg\"/>\n" % k)
+#     out_xml.write("\t\t\t\t</gammaPrior>\n")
+#     out_xml.write("\t\t\t\t<gammaPrior shape=\"0.05\" scale=\"10.0\" \
+# offset=\"0.0\">\n")
+#     out_xml.write("\t\t\t\t\t<parameter idref=\"%s.gt\"/>\n" % k)
+#     out_xml.write("\t\t\t\t</gammaPrior>\n")
+#     out_xml.write("\t\t\t\t<uniformPrior lower=\"0.0\" upper=\"1.0\">\n")
+#     out_xml.write("\t\t\t\t\t<parameter idref=\"%s.frequencies\"/>\n" % k)
+#     out_xml.write("\t\t\t\t</uniformPrior>\n")
+#     out_xml.write("\t\t\t\t<exponentialPrior mean=\"0.5\" offset=\"0.0\">\n")
+#     out_xml.write("\t\t\t\t\t<parameter idref=\"%s.alpha\"/>\n" % k)
+#     out_xml.write("\t\t\t\t</exponentialPrior>\n")
+#     out_xml.write("\t\t\t\t<uniformPrior lower=\"0.0\" upper=\"1.0\">\n")
+#     out_xml.write("\t\t\t\t\t<parameter idref=\"%s.pInv\"/>\n" % k)
+#     out_xml.write("\t\t\t\t</uniformPrior>\n")
+
 for k in alignmentNames:
-    out_xml.write("\t\t\t\t<gammaPrior shape=\"0.05\" scale=\"10.0\" \
-offset=\"0.0\">\n")
-    out_xml.write("\t\t\t\t\t<parameter idref=\"%s.ac\"/>\n" % k)
-    out_xml.write("\t\t\t\t</gammaPrior>\n")
-    out_xml.write("\t\t\t\t<gammaPrior shape=\"0.05\" scale=\"20.0\" \
-offset=\"0.0\">\n")
-    out_xml.write("\t\t\t\t\t<parameter idref=\"%s.ag\"/>\n" % k)
-    out_xml.write("\t\t\t\t</gammaPrior>\n")
-    out_xml.write("\t\t\t\t<gammaPrior shape=\"0.05\" scale=\"10.0\" \
-offset=\"0.0\">\n")
-    out_xml.write("\t\t\t\t\t<parameter idref=\"%s.at\"/>\n" % k)
-    out_xml.write("\t\t\t\t</gammaPrior>\n")
-    out_xml.write("\t\t\t\t<gammaPrior shape=\"0.05\" scale=\"10.0\" \
-offset=\"0.0\">\n")
-    out_xml.write("\t\t\t\t\t<parameter idref=\"%s.cg\"/>\n" % k)
-    out_xml.write("\t\t\t\t</gammaPrior>\n")
-    out_xml.write("\t\t\t\t<gammaPrior shape=\"0.05\" scale=\"10.0\" \
-offset=\"0.0\">\n")
-    out_xml.write("\t\t\t\t\t<parameter idref=\"%s.gt\"/>\n" % k)
-    out_xml.write("\t\t\t\t</gammaPrior>\n")
+    out_xml.write("\t\t\t\t<logNormalPrior mean=\"1.0\" stdev=\"1.25\" \
+offset=\"0.0\" meanInRealSpace=\"false\">\n")
+    out_xml.write("\t\t\t\t\t<parameter idref=\"%s.kappa\"/>\n" % k)
+    out_xml.write("\t\t\t\t</logNormalPrior>\n")
     out_xml.write("\t\t\t\t<uniformPrior lower=\"0.0\" upper=\"1.0\">\n")
     out_xml.write("\t\t\t\t\t<parameter idref=\"%s.frequencies\"/>\n" % k)
     out_xml.write("\t\t\t\t</uniformPrior>\n")
@@ -397,11 +451,11 @@ out_xml.write("\t\t\t<parameter idref=\"demographic.populationMean\"/>\n")
 out_xml.write("\t\t\t<parameter idref=\"demographic.popSize\"/>\n")
 out_xml.write("\t\t\t<parameter idref=\"demographic.indicators\"/>\n")
 for p in alignmentNames:
-    out_xml.write("\t\t\t<parameter idref=\"%s.ac\"/>\n" % p)
-    out_xml.write("\t\t\t<parameter idref=\"%s.ag\"/>\n" % p)
-    out_xml.write("\t\t\t<parameter idref=\"%s.at\"/>\n" % p)
-    out_xml.write("\t\t\t<parameter idref=\"%s.cg\"/>\n" % p)
-    out_xml.write("\t\t\t<parameter idref=\"%s.gt\"/>\n" % p)
+#    out_xml.write("\t\t\t<parameter idref=\"%s.ac\"/>\n" % p)
+#    out_xml.write("\t\t\t<parameter idref=\"%s.ag\"/>\n" % p)
+#    out_xml.write("\t\t\t<parameter idref=\"%s.at\"/>\n" % p)
+#    out_xml.write("\t\t\t<parameter idref=\"%s.cg\"/>\n" % p)
+    out_xml.write("\t\t\t<parameter idref=\"%s.kappa\"/>\n" % p)
     out_xml.write("\t\t\t<parameter idref=\"%s.frequencies\"/>\n" % p)
     out_xml.write("\t\t\t<parameter idref=\"%s.alpha\"/>\n" % p)
     out_xml.write("\t\t\t<parameter idref=\"%s.pInv\"/>\n" % p)
