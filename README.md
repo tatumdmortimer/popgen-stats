@@ -98,7 +98,7 @@ Current Versions: R 3.1.0, ggplot2 1.0.0
 Usage:
 plot_dadi_SFS.R
 
-##siteFrequencySpectra.py
+###siteFrequencySpectra.py
 Reads vcf that has been annotated with snpEff. The outgroup should be the
 reference sequence in the VCF. Outputs synonymous, nonsynonymous, and combined
 site frequency spectra.
