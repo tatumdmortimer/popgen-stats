@@ -265,8 +265,9 @@ for d in alignmentNames:
     out_xml.write("\t\t</scaleOperator>\n")
 out_xml.write("\t\t<upDownOperator scaleFactor=\"0.75\" weight=\"30\">\n")
 out_xml.write("\t\t\t<up>\n")
-for e in alignmentNames:
-    out_xml.write("\t\t\t\t<parameter idref=\"%s.clock.rate\"/>\n" % e)
+for index,e in enumerate(alignmentNames):
+    if index > 0:
+        out_xml.write("\t\t\t\t<parameter idref=\"%s.clock.rate\"/>\n" % e)
 out_xml.write("\t\t\t</up>\n")
 out_xml.write("\t\t\t<down>\n")
 out_xml.write("\t\t\t\t<parameter idref=\"demographic.populationMean\"/>\n")
