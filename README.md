@@ -76,7 +76,7 @@ Current Versions: Python 2.7.6, Biopython 1.63
 Usage:
 LRT.py [likelihood 1] [likelihood 2] [degrees of freedom]
 
-##dadiAnalysis.py
+###dadiAnalysis.py
 This script uses dadi to perform demographic analysis on a site frequency 
 spectrum. Test standard neutral model, expansion model, and exponential growth
 model. 
