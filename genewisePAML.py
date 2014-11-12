@@ -48,7 +48,7 @@ def calc_tree(alignment):
     tree, loglk = wrappers.phyml(a)
     return (a, tree)
 
-def run_paml(a, tree, alignName, outfile, neutralFile):
+def run_paml(a, tree, alignName, outfile, nonsignificantFile, neutralFile):
     try:
         codemlInstance = wrappers.Codeml(a, tree)
         neutral = codemlInstance.fit("M1a")
@@ -66,7 +66,11 @@ def run_paml(a, tree, alignName, outfile, neutralFile):
         if not n:
             outfile.write("%s\t%f\n" % (alignName, p))
         else:
-            neutralFile.write("%s\t%f\n" % (alignName, p))
+            nonsignificantFile.write("%s\t%f\n" % (alignName, p))
+    else:
+        p = cdf_chi2(2, LRTstat*-1)
+        neutralFile.write("%s\t%f\n" % (alignName, p))
+        
        
     
 alignment, directory = get_arguments(sys.argv[1:])
@@ -74,6 +78,7 @@ alignDict = {}
 # Check if alignment or directory was given and calculate stats accordingly
 outfile = open("pamlResults_significant.txt", "w")
 neutralFile = open("pamlResults_neutral.txt", "w")
+nsFile = open("pamlResults_notSignficant.txt", "w")
 if alignment is None:
     if directory is None:
         usage()
@@ -88,13 +93,16 @@ if alignment is None:
             alignName = os.path.splitext(align)[0].replace(directory, "")
             a, tree = calc_tree(align)
             if tree is None:
+                print "%s has no tree" % (alignName)
                 continue
-            run_paml(a, tree, alignName, outfile, neutralFile)
+            run_paml(a, tree, alignName, outfile, nsFile, neutralFile)
             percentageDone = 100*(float(i)/totalAlign)
-            if i%10 >= 0 and i%10 <= 1:
+            if percentageDone%10 >= 0 and percentageDone%10 <= 1:
                 print "Analysis is %f percent complete" % (percentageDone)
                 outfile.flush()
                 os.fsync(outfile)
+                nsFile.flush()
+                os.fsync(nsFile)
                 neutralFile.flush()
                 os.fsync(neutralFile)
 
@@ -112,7 +120,7 @@ elif alignment is not None:
         a, tree = calc_tree(alignment)
         if tree is None:
             print ("This alignment does not have a tree")
-        run_paml(a, tree, alignName, outfile, neutralFile)
+        run_paml(a, tree, alignName, outfile, nsFile, neutralFile)
 
 outfile.close()
 neutralFile.close()
