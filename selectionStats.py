@@ -62,6 +62,7 @@ def calc_stats(alignment, og, outgroup):
                 sys.exit()
             for i in range(a.ns()):
                 a.sequence(i, sequence=a.sequence(i).upper())
+            print(alignment)
             polyDict = a.polymorphism()
             polyDictBPP = a.polymorphismBPP(dataType=4)
             statDict['theta'] = polyDict['thetaW']
@@ -121,6 +122,10 @@ if alignment is None:
         usage()
         sys.exit()
     else:
+        if not os.path.isdir(directory):
+            print "This directory does not exist."
+            usage()
+            sys.exit()
         for align in glob.glob(directory + '*.fasta'):
             alignName = os.path.splitext(align)[0].replace(directory, "")
             alignDict[alignName] = calc_stats(align, og, outgroup)
@@ -131,6 +136,10 @@ elif alignment is not None:
         usage()
         sys.exit()
     else:
+        if not os.path.isfile(alignment):
+            print "This file does not exist"
+            usage()
+            sys.exit()
         alignName = os.path.splitext(alignment)[0]
         alignDict[alignName] = calc_stats(alignment, og, outgroup)
 
