@@ -79,6 +79,10 @@ if alignment is None:
         usage()
         sys.exit()
     else:
+        if not os.path.isdir(directory):
+            print("This is not a valid directory")
+            usage()
+            sys.exit()
         totalAlign = len(glob.glob(directory + '*.fasta'))
         for i,align in enumerate(glob.glob(directory + '*.fasta')):
             alignName = os.path.splitext(align)[0].replace(directory, "")
@@ -100,6 +104,10 @@ elif alignment is not None:
         usage()
         sys.exit()
     else:
+        if not os.path.isfile(alignment):
+            print "The file does not exist."
+            usage()
+            sys.exit()
         alignName = os.path.splitext(alignment)[0]
         a, tree = calc_tree(alignment)
         if tree is None:
