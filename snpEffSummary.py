@@ -70,7 +70,7 @@ def summarize_vcf(vcf_file):
             continue
         out.write(str(record.POS) + "\t")
         for i in record.INFO['EFF']:
-            if "NONSYNONYMOUS_CODING" in i:
+            if "NON_SYNONYMOUS_CODING" in i:
                 gene = i.split("(")[1].split("|")[5]
                 out.write(gene + "\tNONSYNONYMOUS_CODING\n")
                 break
