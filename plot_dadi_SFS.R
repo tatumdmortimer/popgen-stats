@@ -20,10 +20,10 @@ neutral_SFS <- read.table("neutralModelSFS.txt")
 
 SFS <- rbind(data.frame(Model="Observed", 
         Count=observed_SFS$V1,
-        Frequency=row.names(observed_SFS)),
+        Frequency=as.numeric(row.names(observed_SFS))),
     data.frame(Model="Neutral", 
         Count= neutral_SFS$V1,
-        Frequency=row.names(observed_SFS)))
+        Frequency=as.numeric(row.names(observed_SFS))))
 
 if (file.exists("expansionModelSFS.txt")) {
     expansion_SFS <- read.table("expansionModelSFS.txt")
@@ -32,7 +32,7 @@ if (file.exists("expansionModelSFS.txt")) {
         Frequency=SFS$Frequency),
     data.frame(Model = "Expansion", 
         Count = expansion_SFS$V1, 
-        Frequency=row.names(expansion_SFS)))
+        Frequency=as.numeric(row.names(expansion_SFS))))
 
 }
 
@@ -42,14 +42,14 @@ if (file.exists("growthModelSFS.txt")) {
             Count=SFS$Count,
             Frequency=SFS$Frequency),
     data.frame(Model = "Exponential Growth", 
-            Count = growth_SFS$V1), 
-            Frequency=row.names(growth_SFS))
+            Count = growth_SFS$V1, 
+            Frequency=as.numeric(row.names(growth_SFS))))
 
 }
 
 sfs_plot <- ggplot(SFS, aes(x=Frequency, y=Count, fill=Model)) +
     geom_bar(stat="identity", position="dodge") + 
     theme_bw() + 
-    scale_fill_brewer(palette="Paired")
+    scale_fill_brewer(palette="Paired") 
 
 exportPlot(sfs_plot, "dadiSFS", width = 4, height = 3)
