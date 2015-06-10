@@ -99,6 +99,7 @@ def read_groups_file(inFileName):
         groupProteins = entries[1][1:].split(' ')
         groupsDict[groupName] = groupProteins
     inFile.close()
+    print len(groupsDict)
     return groupsDict
 
 def get_core_genes(groupsDict, genomes):
@@ -115,6 +116,7 @@ def get_core_genes(groupsDict, genomes):
         if set(genomes.keys()).issubset(genomeSet):
             if len(genomeList) == len(genomeSet):
                 coreGenes.add(group)
+    print len(coreGenes)
     return coreGenes
 
 def make_unaligned_fasta(dnaDirectory, groupsDict, coreGenes, genomes, og):
@@ -193,8 +195,8 @@ def ancestral_reconstruction(outgroup_genes):
         model = "/opt/PepPrograms/paml4.8/dat/wag.dat"
         outdir = os.path.abspath("%s/ancestral/" % coreGene)
         call_with_log(LAZARUS_PATH + " --codeml --outputdir %s --verbose 9 \
---alignment %s --tree %s --model %s --asrv 4 --getanc --ingroup %s --outgroup \
-%s" % (outdir, align, tree, model, "[%s]" % (",".join(ingroup)), 
+--alignment %s --tree %s --model %s --asrv 4 --gapcorrect --getanc --ingroup %s\
+ --outgroup %s" % (outdir, align, tree, model, "[%s]" % (",".join(ingroup)), 
 "[%s]" % (outgroup)))
     pool = ThreadPool(args.threads)
     pool.map(run_lazarus, outgroup_genes) 
