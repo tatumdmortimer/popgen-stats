@@ -50,13 +50,9 @@ args = get_args()
 
 def summarize_genes(genesFile):
     genes = pandas.read_csv(genesFile, sep = "\t", skiprows=1)
-    genes = genes[["#GeneId", "GeneName", "Count (NON_SYNONYMOUS_CODING)",
-        "Count (SYNONYMOUS_CODING)", "Count (STOP_GAINED)", 
-        "Count (STOP_LOST)"]]
-    print "Non-synonymous total: ", genes["Count (NON_SYNONYMOUS_CODING)"].sum()
-    print "Synonymous total: ", genes["Count (SYNONYMOUS_CODING)"].sum()
-    print "Stop codons lost: ", genes["Count (STOP_LOST)"].sum()
-    print "Stop codons gained: ", genes["Count (STOP_GAINED)"].sum()
+    genes = genes[["#GeneName", "GeneId", "variants_effect_missense_variant",
+        "variants_effect_synonymous_variant", "variants_effect_stop_gained", 
+        "variants_effect_stop_lost+splice_region_variant"]]
     outGenesFile = os.path.splitext(genesFile)[0] + "_reduced.txt"
     genes.to_csv(path_or_buf=outGenesFile, sep = "\t")
 
@@ -64,30 +60,31 @@ def summarize_vcf(vcf_file):
     vcf_reader = vcf.Reader(open(vcf_file, 'r'))
     outVcfFile = os.path.splitext(vcf_file)[0] + "_vcf_summary.txt"
     out = open(outVcfFile, "w")
-    out.write("Position\tGene\tType\n")
+    out.write("Position\tRef\tAlt\tGene\tType\n")
     for record in vcf_reader:
         if record.ALT[0] == None:
             continue
-        out.write(str(record.POS) + "\t")
-        for i in record.INFO['EFF']:
-            if "NON_SYNONYMOUS_CODING" in i:
-                gene = i.split("(")[1].split("|")[5]
-                out.write(gene + "\tNONSYNONYMOUS_CODING\n")
+        out.write("{0}\t{1}\t{2}\t".format(str(record.POS), record.REF,
+            record.ALT[0]))
+        for i in record.INFO['ANN']:
+            if "missense_variant" in i:
+                gene = i.split(",")[0].split("|")[4]
+                out.write(gene + "\tnon-synonymous\n")
                 break
-            elif "SYNONYMOUS_CODING" in i:
-                gene = i.split("(")[1].split("|")[5]
-                out.write(gene + "\tSYNONYMOUS_CODING\n")
+            elif "synonymous_variant" in i:
+                gene = i.split(",")[0].split("|")[4]
+                out.write(gene + "\tsynonymous\n")
                 break
-            elif "INTERGENIC" in i:
-                out.write("-\tINTERGENIC\n")
+            elif "intergenic" in i:
+                out.write("-\tintergenic\n")
                 break
-            elif "STOP_GAINED" in i:
-                gene = i.split("(")[1].split("|")[5]
-                out.write(gene + "\tSTOP_GAINED\n")
+            elif "stop_gained" in i:
+                gene = i.split(",")[0].split("|")[4]
+                out.write(gene + "\tstop-gained\n")
                 break
-            elif "STOP_LOST" in i:
-                gene = i.split("(")[1].split("|")[5]
-                out.write(gene + "\tSTOP_LOST\n")
+            elif "stop_lost" in i:
+                gene = i.split(",")[0].split("|")[4]
+                out.write(gene + "\tstop-lost\n")
                 break
 
     out.close()
