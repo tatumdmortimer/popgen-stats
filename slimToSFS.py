@@ -32,6 +32,10 @@ def create_sfs_slim(slimFile):
         elif line.strip() == "Genomes:":
             mut_section = False
             break
+        elif "OUT:" in line:
+            line = line.strip().split()
+            n = int(line[-1])*2
+            sfs = [0]*(n+1)
         elif pop_section:
             line = line.strip().split()
             n = int(line[1])*2
