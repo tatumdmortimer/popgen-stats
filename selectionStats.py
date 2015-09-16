@@ -51,12 +51,21 @@ def get_arguments():
     parser.add_argument('-o', '--outgroup', help = 'Outgroup(s) for McDonald-Kreitman Test', 
         type=str, nargs='+')
     return parser.parse_args()
-     
+
+def replace_stop(sequence):
+    codons = [sequence[i:i+3] for i in range(0, len(sequence), 3)]
+    stop_codons = ['TAA', 'TAG', 'TGA', 'taa', 'tag', 'tga']
+    codons = [x if x not in stop_codons else '---' for x in codons]
+    new_sequence = ''.join(codons)
+    return new_sequence
+
 def calc_stats(alignment, outgroup):
     statDict = {}
     a = egglib.Align(alignment)
     for i in range(a.ns()):
         a.sequence(i, sequence=a.sequence(i).upper())
+        if args.frame:
+            a.sequence(i, sequence=replace_stop(a.sequence(i)))
     polyDict = a.polymorphism()
     statDict['theta'] = polyDict['thetaW']
     statDict['pi'] = polyDict['Pi']
@@ -120,7 +129,7 @@ alignDict = {}
 # Check if alignment or directory was given and calculate stats accordingly
 if args.alignment is None:
     for align in glob.glob(args.directory + '*.fasta'):
-        alignName = os.path.splitext(align)[0].replace(directory, "")
+        alignName = os.path.splitext(align)[0].replace(args.directory, "")
         alignDict[alignName] = calc_stats(align, args.outgroup)
 
 else:
