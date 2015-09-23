@@ -74,7 +74,7 @@ def calc_stats(alignment, outgroup):
         if len(a.sequence(1))%3 != 0:
             print("The following alignment is not in frame:")
             print(alignment)
-            sys.exit()
+            return {}
         polyDictBPP = a.polymorphismBPP(dataType=4)
         statDict['piN'] = polyDictBPP['PiNS']
         statDict['piS'] = polyDictBPP['PiS']
