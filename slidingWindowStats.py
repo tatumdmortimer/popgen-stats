@@ -4,6 +4,9 @@ import sys
 import os
 import getopt
 import egglib
+import matplotlib
+matplotlib.use('Agg')
+import matplotlib.pyplot as plt
 
 # This script reads in an alignment and calculates diversity and selection
 # statistics based on the window width and window step given by the user.
@@ -64,10 +67,22 @@ if outgroup is not None:
     align.group(align.find(outgroup, strict = False), group = 999)
 start = 0
 stop = winWidth
+
+location = []
+TD = []
+
 for window in align.slider(winWidth, winStep):
     stats = calc_stats(window)
     start += winStep
     stop += winStep
     outfile.write("%i\t%i\t%s\t%s\t%s\t%s\n" % (start, stop, stats['theta'],
     stats['pi'], stats['tajimaD'], stats['FayWuH']))
+    location.append((start + stop)/2)
+    TD.append(stats['tajimaD'])
 outfile.close()
+
+plt.plot(location, TD)
+plt.xlabel('Location')
+plt.ylabel('Tajima\'s D')
+plt.savefig("slidingWindowTajimasD.png")
+plt.close()
