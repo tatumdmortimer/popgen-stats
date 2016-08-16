@@ -257,15 +257,14 @@ bottlegrowth_sfs_file.close()
 min_AIC = min(AIC_stats)
 
 if min_AIC == expansion_AIC:
-    print "Working on likelihood surface..."
-    likelihood_grid(growth_func_ex, data, ns, pts_l, "expansion")
+    print "Best fitting model: Expansion. Working on likelihood surface..."
+    likelihood_grid(expansion_func_ex, data, ns, pts_l, "expansion")
 if min_AIC == growth_AIC:
-    print "Working on likelihood surface..."
+    print "Best fitting model: Growth. Working on likelihood surface..."
     likelihood_grid(growth_func_ex, data, ns, pts_l, "growth")
 if min_AIC == bottleneck_AIC:
-    print "Working on likelihood surface..."
+    print "Best fitting model: Bottleneck. Working on likelihood surface..."
     likelihood_grid_bottleneck(bottleneck_func_ex, data, ns, pts_l, "bottlneck")
 if min_AIC == bottlegrowth_AIC:
-    print "Working on likelihood surface..."
+    print "Best fitting model: Bottlegrowth. Working on likelihood surface..."
     likelihood_grid_bottlegrowth(bottlegrowth_func_ex, data, ns, pts_l, "bottlegrowth")
-
