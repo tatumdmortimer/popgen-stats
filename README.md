@@ -78,8 +78,8 @@ LRT.py [likelihood 1] [likelihood 2] [degrees of freedom]
 
 ###dadiAnalysis.py
 This script uses dadi to perform demographic analysis on a site frequency 
-spectrum. Test standard neutral model, expansion model, and exponential growth
-model. 
+spectrum. Test standard neutral model, expansion model, exponential growth
+model, bottleneck model, and bottlegrowth model. 
 
 Requirements: Biopython, NumPy, dadi (code.google.com/p/dadi)
 
