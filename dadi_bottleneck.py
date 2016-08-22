@@ -103,7 +103,7 @@ bottleneck_sfs = dadi.Inference.optimally_scaled_sfs(
     bottleneck_best_model, data)
 
 # Output SFS for bottlegrowth model
-with open("bottlegrowthModelSFS.txt", "w") as sfsfile:
+with open("bottleneckModelSFS.txt", "w") as sfsfile:
     for i in range(1, len(bottleneck_sfs)-1):
         sfsfile.write(str(bottleneck_sfs[i]) + "\n")
 print datetime.now() - startTime
