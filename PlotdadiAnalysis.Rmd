@@ -5,10 +5,15 @@ date: "August 18, 2016"
 output: html_document
 ---
 
+
+
 ```{r, echo = FALSE, message = FALSE, warning = FALSE}
+
+#log scale nu, separate plots for tau
 
 library(ggplot2)
 library(reshape2)
+library(cowplot)
 ll <- data.frame(a=rep(NA, times = 100))
                  
 ```
@@ -19,15 +24,16 @@ ll <- data.frame(a=rep(NA, times = 100))
 
 ```{r, echo = FALSE, message = FALSE, warning = FALSE, fig.width = 18, fig.height = 18}
 
-observed_SFS <- read.table("observedSFS.txt")
-neutral_SFS <- read.table("neutralModelSFS.txt")
-
-expansion_SFS <- rbind(data.frame(Model="Observed", 
-        Count=observed_SFS$V1,
-        Frequency=as.numeric(row.names(observed_SFS))),
-    data.frame(Model="Neutral", 
-        Count= neutral_SFS$V1,
-        Frequency=as.numeric(row.names(observed_SFS))))
+if (file.exists("observedSFS.txt") && file.exists("neutralModelSFS.txt")) {
+  observed_SFS <- read.table("observedSFS.txt")
+  neutral_SFS <- read.table("neutralModelSFS.txt")
+  expansion_SFS <- rbind(data.frame(Model="Observed", 
+          Count=observed_SFS$V1,
+          Frequency=as.numeric(row.names(observed_SFS))),
+      data.frame(Model="Neutral", 
+          Count= neutral_SFS$V1,
+          Frequency=as.numeric(row.names(observed_SFS))))
+}
 
 if (file.exists("expansionModelSFS.txt")) {
   model <- read.table("expansionModelSFS.txt")
@@ -60,9 +66,17 @@ if (file.exists("expansionModelSFS.txt")) {
 if (file.exists("dadi_expansionModel.txt")) {
   expansion_params <- read.table("dadi_expansionModel.txt", header = TRUE)
   params_df <- melt(expansion_params[,1:2], variable.name = "Parameter", value.name = "Value")
-  ggplot(data = params_df, aes(x=Parameter, y=Value)) + geom_boxplot() +
+  expansion.nu.plot <- ggplot(data = params_df[1:100,], aes(x=Parameter, y=Value)) + geom_boxplot() +
+      xlab("") +
       theme(text = element_text(size=14),
       axis.text.x = element_text(angle=90, vjust=1, size = 12))
+  
+  expansion.tau.plot <- ggplot(data = params_df[101:200,], aes(x=Parameter, y=Value)) + geom_boxplot() + 
+      xlab("") + ylab("") +
+      theme(text = element_text(size=14),
+      axis.text.x = element_text(angle=90, vjust=1, size = 12))
+  
+  plot_grid(expansion.nu.plot, expansion.tau.plot, align = "h")
 }
 
 ```
@@ -82,7 +96,11 @@ if (file.exists("dadi_expansionModel.txt")) {
   cat("Max LL: ", max_expansion_ll, "\n")
   max_expansion_AIC <- 2 * 2 - 2 * max_expansion_ll
   cat("Max AIC: ", max_expansion_AIC, "\n")
-
+  max_expansion_ll_idx <- which(expansion_params$ll == max_expansion_ll)
+  max_expansion_nu <- expansion_params$nu[max_expansion_ll_idx]
+  cat("Nu: ", max_expansion_nu, "\n")
+  max_expansion_tau <- expansion_params$tau[max_expansion_ll_idx]
+  cat("Tau: ", max_expansion_tau, "\n")
 }
 
 ```
@@ -130,9 +148,17 @@ if (file.exists("growthModelSFS.txt")) {
 
 if (file.exists("dadi_growthModel.txt")) {
   growth_params <- read.table("dadi_growthModel.txt", header = TRUE)
-  ggplot(data = params_df, aes(x=Parameter, y=Value)) + geom_boxplot() +
-      theme(text = element_text(size=16),
-      axis.text.x = element_text(angle=90, vjust=1, size = 14))
+  growth.nu.plot <- ggplot(data = params_df[1:100,], aes(x=Parameter, y=Value)) + geom_boxplot() +
+      xlab("") +
+      theme(text = element_text(size=14),
+      axis.text.x = element_text(angle=90, vjust=1, size = 12))
+  
+  growth.tau.plot <- ggplot(data = params_df[101:200,], aes(x=Parameter, y=Value)) + geom_boxplot() + 
+      xlab("") + ylab("") +
+      theme(text = element_text(size=14),
+      axis.text.x = element_text(angle=90, vjust=1, size = 12))
+  
+  plot_grid(growth.nu.plot, growth.tau.plot, align = "h")
 }
 
 ```
@@ -152,6 +178,11 @@ if (file.exists("dadi_growthModel.txt")) {
   cat("Max LL: ", max_growth_ll, "\n")
   max_growth_AIC <- 2 * 2 - 2 * max_growth_ll  
   cat("Max AIC: ", max_growth_AIC, "\n")
+  max_growth_ll_idx <- which(growth_params$ll == max_growth_ll)
+  max_growth_nu <- growth_params$nu[max_growth_ll_idx]
+  cat("Nu: ", max_growth_nu, "\n")
+  max_growth_tau <- growth_params$tau[max_growth_ll_idx]
+  cat("Tau: ", max_growth_tau, "\n")
 }
 
 ```
@@ -200,9 +231,16 @@ if (file.exists("bottlegrowthModelSFS.txt")) {
 if (file.exists("dadi_bottlegrowthModel.txt")) {
   bottlegrowth_params <- read.table("dadi_bottlegrowthModel.txt", header = TRUE)
   params_df <- melt(bottlegrowth_params[,1:3], variable.name = "Parameter", value.name = "Value")
-  ggplot(data = params_df, aes(x=Parameter, y=Value)) + geom_boxplot() +
-      theme(text = element_text(size=16),
-      axis.text.x = element_text(angle=90, vjust=1, size = 14))
+  bottlegrowth.nuB.nuF.plot <- ggplot(data = params_df[1:200,], aes(x=Parameter, y=Value)) + geom_boxplot() +
+      xlab("") +
+      theme(text = element_text(size=14),
+      axis.text.x = element_text(angle=90, vjust=1, size = 12))
+  bottlegrowth.tau.plot <- ggplot(data = params_df[201:300,], aes(x=Parameter, y=Value)) + geom_boxplot() + 
+      xlab("") + ylab("") +
+      theme(text = element_text(size=14),
+      axis.text.x = element_text(angle=90, vjust=1, size = 12))
+  
+  plot_grid(bottlegrowth.nuB.nuF.plot,bottlegrowth.tau.plot, align = "h")
 }
 
 ```
@@ -222,6 +260,13 @@ if (file.exists("dadi_bottlegrowthModel.txt")) {
   cat("Max LL: ", max_bottlegrowth_ll, "\n")
   max_bottlegrowth_AIC <- 2 * 2 - 2 * max_bottlegrowth_ll  
   cat("Max AIC: ", max_bottlegrowth_AIC, "\n")
+  max_bottlegrowth_ll_idx <- which(bottlegrowth_params$ll == max_bottlegrowth_ll)
+  max_bottlegrowth_nuB <- bottlegrowth_params$nuB[max_bottlegrowth_ll_idx]
+  cat("NuB: ", max_bottlegrowth_nuB, "\n")
+  max_bottlegrowth_nuF <- bottlegrowth_params$nuF[max_bottlegrowth_ll_idx]
+  cat("NuF: ", max_bottlegrowth_nuF, "\n")
+  max_bottlegrowth_tau <- bottlegrowth_params$tau[max_bottlegrowth_ll_idx]
+  cat("Tau: ", max_bottlegrowth_tau, "\n")
 }
 
 
@@ -271,9 +316,16 @@ if (file.exists("bottleneckModelSFS.txt")) {
 if (file.exists("dadi_bottleneckModel.txt")) {
   bottleneck_params <- read.table("dadi_bottleneckModel.txt", header = TRUE)
   params_df <- melt(bottleneck_params[,1:4], variable.name = "Parameter", value.name = "Value")
-  ggplot(data = params_df, aes(x=Parameter, y=Value)) + geom_boxplot() +
+  bottleneck.nuB.nuF.plot <- ggplot(data = params_df[1:200,], aes(x=Parameter, y=Value)) + geom_boxplot() +
+      xlab("") +
       theme(text = element_text(size=14),
       axis.text.x = element_text(angle=90, vjust=1, size = 12))
+  bottleneck.tauB.tauF.plot <- ggplot(data = params_df[201:400,], aes(x=Parameter, y=Value)) + geom_boxplot() + 
+      xlab("") + ylab("") +
+      theme(text = element_text(size=14),
+      axis.text.x = element_text(angle=90, vjust=1, size = 12))
+  
+  plot_grid(bottleneck.nuB.nuF.plot,bottleneck.tauB.tauF.plot, align = "h")
 }
 
 ```
@@ -293,6 +345,15 @@ if (file.exists("dadi_bottleneckModel.txt")) {
   cat("Max LL: ", max_bottleneck_ll, "\n")
   max_bottleneck_AIC <- 2 * 3 - 2 * max_bottleneck_ll
   cat("Max AIC: ", max_bottleneck_AIC, "\n")
+  max_bottleneck_ll_idx <- which(bottleneck_params$ll == max_bottleneck_ll)
+  max_bottleneck_nuB <- bottleneck_params$nuB[max_bottleneck_ll_idx]
+  cat("NuB: ", max_bottleneck_nuB, "\n")
+  max_bottleneck_nuF <- bottleneck_params$nuF[max_bottleneck_ll_idx]
+  cat("NuF: ", max_bottleneck_nuF, "\n")
+  max_bottleneck_tauB <- bottleneck_params$tauB[max_bottleneck_ll_idx]
+  cat("TauB: ", max_bottleneck_tauB, "\n")
+  max_bottleneck_tauF <- bottleneck_params$tauF[max_bottleneck_ll_idx]
+  cat("TauF: ", max_bottleneck_tauF, "\n")
 }
 
 ```
@@ -302,6 +363,6 @@ if (file.exists("dadi_bottleneckModel.txt")) {
 ```{r, echo = FALSE, message = FALSE, warning = FALSE}
 
 ll$a <- NULL
-ggplot(data = melt(ll, variable.name = "Model", value.name = "LL"), aes(x=Model, y=LL)) + geom_boxplot()
+ggplot(data = melt(ll, variable.name = "Model", value.name = "LL"), aes(x = Model, y = LL)) + geom_boxplot(aes(color = Model))
 
 ```
