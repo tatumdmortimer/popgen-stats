@@ -1,0 +1,537 @@
+---
+title: "dadiAnalysis"
+author: "Abigail Shockey and Tatum Mortimer"
+date: "August 18, 2016"
+output: html_document
+---
+
+
+
+```{r, echo = FALSE, message = FALSE, warning = FALSE}
+
+#log scale nu, separate plots for tau
+
+library(ggplot2)
+library(reshape2)
+library(cowplot)
+ll <- data.frame(a=rep(NA, times = 100))
+                 
+```
+
+## Expansion
+
+### SFS
+
+```{r, echo = FALSE, message = FALSE, warning = FALSE, fig.width = 18, fig.height = 18}
+
+if (file.exists("observedSFS.txt") && file.exists("neutralModelSFS.txt")) {
+  observed_SFS <- read.table("observedSFS.txt")
+  neutral_SFS <- read.table("neutralModelSFS.txt")
+  expansion_SFS <- rbind(data.frame(Model="Observed", 
+          Count=observed_SFS$V1,
+          Frequency=as.numeric(row.names(observed_SFS))),
+      data.frame(Model="Neutral", 
+          Count= neutral_SFS$V1,
+          Frequency=as.numeric(row.names(observed_SFS))))
+}
+
+if (file.exists("expansionModelSFS.txt")) {
+  model <- read.table("expansionModelSFS.txt")
+  expansion_SFS <- rbind(data.frame(Model = expansion_SFS$Model, 
+      Count=expansion_SFS$Count,
+      Frequency=expansion_SFS$Frequency),
+  data.frame(Model = "Expansion", 
+      Count = model$V1, 
+      Frequency=as.numeric(row.names(model))))
+
+  ggplot(expansion_SFS, aes(x=Frequency, y=Count, fill=Model)) +
+  geom_bar(stat="identity", position="dodge", show.legend = TRUE) + 
+  scale_fill_brewer(palette="Paired") +
+  theme_bw() +
+    theme(text = element_text(size=22),
+    axis.text.x = element_text(angle=90, vjust=1),
+    axis.line = element_line(colour = "black"),
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    #        panel.border = element_blank(),
+    panel.background = element_blank())
+}
+
+```
+
+### Parameter Values
+
+```{r, echo = FALSE, message = FALSE, warning = FALSE}
+
+if (file.exists("dadi_expansionModel.txt")) {
+  expansion_params <- read.table("dadi_expansionModel.txt", header = TRUE)
+  expansion_params <- setNames(expansion_params, c("v","t","LL"))
+  params_df <- melt(expansion_params[,1:2], variable.name = "Parameter", value.name = "Value")
+  expansion.nu.plot <- ggplot(data = params_df[1:100,], aes(x=Parameter, y=Value)) + geom_boxplot() +
+      xlab("") +
+      theme(text = element_text(size=16),
+      axis.text.x = element_text(angle=90, vjust=1, size = 16))
+  
+  expansion.tau.plot <- ggplot(data = params_df[101:200,], aes(x=Parameter, y=Value)) + geom_boxplot() + 
+      xlab("") +
+      theme(text = element_text(size=16),
+      axis.text.x = element_text(angle=90, vjust=1, size = 16))
+  
+  plot_grid(expansion.nu.plot, expansion.tau.plot, align = "h")
+}
+
+if (file.exists("dadi_expansionModel.txt")) {
+  summary(expansion_params)
+}
+
+```
+
+### Parameter correlation
+
+```{r, echo = FALSE, message = FALSE, warning = FALSE}
+
+if (file.exists("dadi_expansionModel.txt")){
+  expansion_params <- read.table("dadi_expansionModel.txt", header = TRUE)
+  expansion_params <- setNames(expansion_params, c("v","t","LL"))
+  dat <- cor(as.matrix(expansion_params[,c("v","t", "LL")]), use = "pairwise.complete.obs", method = "pearson")
+  dat.m = melt(dat)
+  ggplot(dat.m, aes(x=Var2,y=Var1)) +
+  geom_tile(aes(fill= value)) +
+  geom_text(aes(fill = value, label = round(value, 2)), size=6) +
+  xlab(NULL) + ylab(NULL) +
+  scale_fill_gradient2(high="#b8b8b8", mid="white", low="#b8b8b8", midpoint=0, limits =c(-1,1), guide=FALSE) +
+  theme_bw() +
+  theme(text = element_text(size=16),
+        axis.ticks=element_blank(),
+        panel.background=element_blank(),
+        panel.border=element_blank(),
+        panel.grid.major= element_blank(),
+        #axis.text.x = element_blank(),
+        #axis.text.y = element_blank(),
+        panel.grid.minor= element_blank())
+}
+
+```
+
+
+### AIC
+
+```{r, echo = FALSE, message = FALSE, warning = FALSE}
+
+if (file.exists("dadi_expansionModel.txt")){
+  expansion_params <- read.table("dadi_expansionModel.txt", header = TRUE)
+  expansion_params <- setNames(expansion_params, c("v","t","LL"))
+  Expansion <- expansion_params$LL
+  ll <- cbind(ll, Expansion)
+  avg_expansion_ll <- median(expansion_params$LL)
+  cat("Average LL: ", avg_expansion_ll, "\n")
+  avg_expansion_AIC <- 2 * 2 - 2 * avg_expansion_ll
+  cat("Average AIC: ", avg_expansion_AIC, "\n")
+  max_expansion_ll <- max(expansion_params$LL)
+  cat("Max LL: ", max_expansion_ll, "\n")
+  max_expansion_AIC <- 2 * 2 - 2 * max_expansion_ll
+  cat("Max AIC: ", max_expansion_AIC, "\n")
+  max_expansion_ll_idx <- which(expansion_params$LL == max_expansion_ll)
+  max_expansion_nu <- expansion_params$v[max_expansion_ll_idx]
+  cat("v: ", max_expansion_nu, "\n")
+  max_expansion_tau <- expansion_params$t[max_expansion_ll_idx]
+  cat("t: ", max_expansion_tau, "\n")
+}
+
+```
+
+## Growth
+
+### SFS
+
+```{r, echo = FALSE, message = FALSE, warning = FALSE, fig.width = 18, fig.height = 18}
+
+if (file.exists("observedSFS.txt") && file.exists("neutralModelSFS.txt")) {
+  observed_SFS <- read.table("observedSFS.txt")
+  neutral_SFS <- read.table("neutralModelSFS.txt")
+  growth_SFS <- rbind(data.frame(Model="Observed", 
+          Count=observed_SFS$V1,
+          Frequency=as.numeric(row.names(observed_SFS))),
+      data.frame(Model="Neutral", 
+          Count= neutral_SFS$V1,
+          Frequency=as.numeric(row.names(observed_SFS))))
+}
+
+if (file.exists("growthModelSFS.txt")) { 
+    model <- read.table("growthModelSFS.txt")
+    growth_SFS <- rbind(data.frame(Model = growth_SFS$Model, 
+            Count=growth_SFS$Count,
+            Frequency=growth_SFS$Frequency),
+    data.frame(Model = "Exponential Growth", 
+            Count = model$V1, 
+            Frequency=as.numeric(row.names(model))))
+    ggplot(growth_SFS, aes(x=Frequency, y=Count, fill=Model)) +
+    geom_bar(stat="identity", position="dodge", show.legend = TRUE) + 
+    scale_fill_brewer(palette="Paired") +
+    theme_bw() +
+      theme(text = element_text(size=22),
+      axis.text.x = element_text(angle=90, vjust=1),
+      axis.line = element_line(colour = "black"),
+      panel.grid.major = element_blank(),
+      panel.grid.minor = element_blank(),
+      #        panel.border = element_blank(),
+      panel.background = element_blank())
+}
+
+```
+
+### Parameter Values
+
+```{r, echo = FALSE, message = FALSE, warning = FALSE}
+
+if (file.exists("dadi_growthModel.txt")) {
+  growth_params <- read.table("dadi_growthModel.txt", header = TRUE)
+  growth_params <- setNames(growth_params, c("v","t","LL"))
+  params_df <- melt(expansion_params[,1:2], variable.name = "Parameter", value.name = "Value")
+  growth.nu.plot <- ggplot(data = params_df[1:100,], aes(x=Parameter, y=Value)) + geom_boxplot() +
+      xlab("") +
+      theme(text = element_text(size=16),
+      axis.text.x = element_text(angle=90, vjust=1, size = 16))
+  growth.tau.plot <- ggplot(data = params_df[101:200,], aes(x=Parameter, y=Value)) + geom_boxplot() + 
+      xlab("") + ylab("") +
+      theme(text = element_text(size=16),
+      axis.text.x = element_text(angle=90, vjust=1, size = 16))
+  plot_grid(growth.nu.plot, growth.tau.plot, align = "h")
+}
+
+if (file.exists("dadi_growthModel.txt")) {
+  summary(growth_params)
+}
+
+```
+
+### Parameter correlations
+
+```{r, echo = FALSE, message = FALSE, warning = FALSE}
+
+if (file.exists("dadi_growthModel.txt")){
+  growth_params <- read.table("dadi_growthModel.txt", header = TRUE)
+  growth_params <- setNames(growth_params, c("v","t","LL"))
+  dat <- cor(as.matrix(growth_params[,c("v","t", "LL")]), use = "pairwise.complete.obs", method = "pearson")
+  dat.m = melt(dat)
+  ggplot(dat.m, aes(x=Var2,y=Var1)) +
+  geom_tile(aes(fill= value)) +
+  geom_text(aes(fill = value, label = round(value, 2)), size=6) +
+  xlab(NULL) + ylab(NULL) +
+  scale_fill_gradient2(high="#b8b8b8", mid="white", low="#b8b8b8", midpoint=0, limits =c(-1,1), guide=FALSE) +
+  theme_bw() +
+  theme(text = element_text(size=16),
+        axis.ticks=element_blank(),
+        panel.background=element_blank(),
+        panel.border=element_blank(),
+        panel.grid.major= element_blank(),
+        #axis.text.x = element_blank(),
+        #axis.text.y = element_blank(),
+        panel.grid.minor= element_blank())
+}
+
+```
+
+### AIC
+
+```{r, echo = FALSE, message = FALSE, warning = FALSE}
+
+if (file.exists("dadi_growthModel.txt")) {
+  growth_params <- read.table("dadi_growthModel.txt", header = TRUE)
+  growth_params <- setNames(growth_params, c("v","t","LL"))
+  Growth <- growth_params$LL
+  ll <- cbind(ll, Growth)
+  avg_growth_ll = median(growth_params$LL)
+  cat("Average LL: ", avg_growth_ll, "\n")
+  avg_growth_AIC <- 2 * 2 - 2 * avg_growth_ll
+  cat("Average AIC: ", avg_growth_AIC, "\n")
+  max_growth_ll = max(growth_params$LL)
+  cat("Max LL: ", max_growth_ll, "\n")
+  max_growth_AIC <- 2 * 2 - 2 * max_growth_ll  
+  cat("Max AIC: ", max_growth_AIC, "\n")
+  max_growth_ll_idx <- which(growth_params$LL == max_growth_ll)
+  max_growth_nu <- growth_params$t[max_growth_ll_idx]
+  cat("t: ", max_growth_nu, "\n")
+  max_growth_tau <- growth_params$v[max_growth_ll_idx]
+  cat("v: ", max_growth_tau, "\n")
+}
+
+```
+
+## Bottlegrowth
+
+### SFS
+
+```{r, echo = FALSE, message = FALSE, warning = FALSE, fig.width = 18, fig.height = 18}
+
+if (file.exists("observedSFS.txt") && file.exists("neutralModelSFS.txt")) {
+  observed_SFS <- read.table("observedSFS.txt")
+  neutral_SFS <- read.table("neutralModelSFS.txt")
+  bottlegrowth_SFS <- rbind(data.frame(Model="Observed", 
+          Count=observed_SFS$V1,
+          Frequency=as.numeric(row.names(observed_SFS))),
+      data.frame(Model="Neutral", 
+          Count= neutral_SFS$V1,
+          Frequency=as.numeric(row.names(observed_SFS))))
+}
+    
+if (file.exists("bottlegrowthModelSFS.txt")) { 
+  model <- read.table("bottlegrowthModelSFS.txt")
+  bottlegrowth_SFS <- rbind(data.frame(Model = bottlegrowth_SFS$Model, 
+                          Count=bottlegrowth_SFS$Count,
+                          Frequency=bottlegrowth_SFS$Frequency),
+               data.frame(Model = "Bottlegrowth", 
+                          Count = model$V1, 
+                          Frequency=as.numeric(row.names(model))))
+  ggplot(bottlegrowth_SFS, aes(x=Frequency, y=Count, fill=Model)) +
+  geom_bar(stat="identity", position="dodge", show.legend = TRUE) + 
+  scale_fill_brewer(palette="Paired") +
+  theme_bw() +
+    theme(text = element_text(size=22),
+    axis.text.x = element_text(angle=90, vjust=1),
+    axis.line = element_line(colour = "black"),
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    #        panel.border = element_blank(),
+    panel.background = element_blank())
+}
+
+```
+
+### Parameter Values
+
+```{r, echo = FALSE, message = FALSE, warning = FALSE}
+
+if (file.exists("dadi_bottlegrowthModel.txt")){
+  bottlegrowth_params <- read.table("dadi_bottlegrowthModel.txt", header = TRUE)
+  bottlegrowth_params <- setNames(bottlegrowth_params, c("vB","vF","t","LL"))
+  params_df <- melt(bottlegrowth_params[,1:3], variable.name = "Parameter", value.name = "Value")
+  bottlegrowth.nuB.plot <- ggplot(data = params_df[1:100,], aes(x=Parameter, y=Value)) + geom_boxplot() +
+      xlab("") +
+      theme(text = element_text(size=16),
+      axis.text.x = element_text(angle=90, vjust=1, size = 16))
+  bottlegrowth.nuF.plot <- ggplot(data = params_df[101:200,], aes(x=Parameter, y=Value)) + geom_boxplot() +
+      xlab("") +
+      theme(text = element_text(size=16),
+      axis.text.x = element_text(angle=90, vjust=1, size = 16))
+  plot_grid(bottlegrowth.nuB.plot,bottlegrowth.nuF.plot, align = "h")
+}
+
+if (file.exists("dadi_bottlegrowthModel.txt")){
+  bottlegrowth_params <- read.table("dadi_bottlegrowthModel.txt", header = TRUE)
+  bottlegrowth_params <- setNames(bottlegrowth_params, c("vB","vF","t","LL"))
+  params_df <- melt(bottlegrowth_params[,1:3], variable.name = "Parameter", value.name = "Value")
+    bottlegrowth.tau.plot <- ggplot(data = params_df[201:300,], aes(x=Parameter, y=Value)) + geom_boxplot() + 
+      xlab("") +
+      theme(text = element_text(size=16),
+      axis.text.x = element_text(angle=90, vjust=1, size = 16))
+  plot_grid(bottlegrowth.tau.plot, align = "h")
+}
+
+if (file.exists("dadi_bottlegrowthModel.txt")) {
+  summary(bottlegrowth_params)
+}
+
+```
+
+### Parameter correlations
+
+```{r, echo = FALSE, message = FALSE, warning = FALSE}
+
+if (file.exists("dadi_bottlegrowthModel.txt")){
+  bottlegrowth_params <- read.table("dadi_bottlegrowthModel.txt", header = TRUE)
+  bottlegrowth_params <- setNames(bottlegrowth_params, c("vB","vF","t","LL"))
+  dat <- cor(as.matrix(bottlegrowth_params[,c("vB","vF","t", "LL")]), use = "pairwise.complete.obs", method = "pearson")
+  dat.m = melt(dat)
+  ggplot(dat.m, aes(x=Var2,y=Var1)) +
+  geom_tile(aes(fill= value)) +
+  geom_text(aes(fill = value, label = round(value, 2)), size=6) +
+  xlab(NULL) + ylab(NULL) +
+  scale_fill_gradient2(high="#b8b8b8", mid="white", low="#b8b8b8", midpoint=0, limits =c(-1,1), guide=FALSE) +
+  theme_bw() +
+  theme(text = element_text(size=16),
+        axis.ticks=element_blank(),
+        panel.background=element_blank(),
+        panel.border=element_blank(),
+        panel.grid.major= element_blank(),
+        #axis.text.x = element_blank(),
+        #axis.text.y = element_blank(),
+        panel.grid.minor= element_blank())
+}
+
+```
+
+
+### AIC
+
+```{r, echo = FALSE, message = FALSE, warning = FALSE}
+
+if (file.exists("dadi_bottlegrowthModel.txt")) {
+  bottlegrowth_params <- read.table("dadi_bottlegrowthModel.txt", header = TRUE)
+  bottlegrowth_params <- setNames(bottlegrowth_params, c("vB","vF","t","LL"))
+  Bottlegrowth <- bottlegrowth_params$LL
+  ll <- cbind(ll, Bottlegrowth)
+  avg_bottlegrowth_ll = median(bottlegrowth_params$LL)
+  cat("Average LL: ", avg_bottlegrowth_ll, "\n")
+  avg_bottlegrowth_AIC <- 2 * 3 - 2 * avg_bottlegrowth_ll
+  cat("Average AIC: ", avg_bottlegrowth_AIC, "\n")  
+  max_bottlegrowth_ll = max(bottlegrowth_params$LL)
+  cat("Max LL: ", max_bottlegrowth_ll, "\n")
+  max_bottlegrowth_AIC <- 2 * 3 - 2 * max_bottlegrowth_ll  
+  cat("Max AIC: ", max_bottlegrowth_AIC, "\n")
+  max_bottlegrowth_ll_idx <- which(bottlegrowth_params$LL == max_bottlegrowth_ll)
+  max_bottlegrowth_nuB <- bottlegrowth_params$vB[max_bottlegrowth_ll_idx]
+  cat("vB: ", max_bottlegrowth_nuB, "\n")
+  max_bottlegrowth_nuF <- bottlegrowth_params$vF[max_bottlegrowth_ll_idx]
+  cat("vF: ", max_bottlegrowth_nuF, "\n")
+  max_bottlegrowth_tau <- bottlegrowth_params$t[max_bottlegrowth_ll_idx]
+  cat("t: ", max_bottlegrowth_tau, "\n")
+}
+
+```
+
+## Bottleneck
+
+### SFS
+
+```{r, echo = FALSE, message = FALSE, warning = FALSE, fig.width = 18, fig.height = 18}
+
+if (file.exists("observedSFS.txt") && file.exists("neutralModelSFS.txt")) {
+  observed_SFS <- read.table("observedSFS.txt")
+  neutral_SFS <- read.table("neutralModelSFS.txt")
+  bottleneck_SFS <- rbind(data.frame(Model="Observed", 
+          Count=observed_SFS$V1,
+          Frequency=as.numeric(row.names(observed_SFS))),
+      data.frame(Model="Neutral", 
+          Count= neutral_SFS$V1,
+          Frequency=as.numeric(row.names(observed_SFS))))
+}
+    
+if (file.exists("bottleneckModelSFS.txt")) { 
+  model <- read.table("bottleneckModelSFS.txt")
+  bottleneck_SFS <- rbind(data.frame(Model = bottleneck_SFS$Model, 
+                          Count=bottleneck_SFS$Count,
+                          Frequency=bottleneck_SFS$Frequency),
+               data.frame(Model = "Bottleneck", 
+                          Count = model$V1, 
+                          Frequency=as.numeric(row.names(model))))
+    ggplot(bottleneck_SFS, aes(x=Frequency, y=Count, fill=Model)) +
+    geom_bar(stat="identity", position="dodge", show.legend = TRUE) + 
+    scale_fill_brewer(palette="Paired") +
+    theme_bw() +
+      theme(text = element_text(size=22),
+      axis.text.x = element_text(angle=90, vjust=1),
+      axis.line = element_line(colour = "black"),
+      panel.grid.major = element_blank(),
+      panel.grid.minor = element_blank(),
+      #        panel.border = element_blank(),
+      panel.background = element_blank())
+}
+
+```
+
+### Parameter Values
+
+```{r, echo = FALSE, message = FALSE, warning = FALSE}
+
+if (file.exists("dadi_bottleneckModel.txt")){
+  bottleneck_params <- read.table("dadi_bottleneckModel.txt", header = TRUE)
+  bottleneck_params <- setNames(bottleneck_params, c("vB","vF","tB","tF","LL"))
+  params_df <- melt(bottleneck_params[,1:4], variable.name = "Parameter", value.name = "Value")
+  bottleneck.nuB.plot <- ggplot(data = params_df[1:100,], aes(x=Parameter, y=Value)) + geom_boxplot() +
+      xlab("") +
+      theme(text = element_text(size=16),
+      axis.text.x = element_text(angle=90, vjust=1, size = 16))
+  bottleneck.nuF.plot <- ggplot(data = params_df[101:200,], aes(x=Parameter, y=Value)) + geom_boxplot() +
+      xlab("") +
+      theme(text = element_text(size=16),
+      axis.text.x = element_text(angle=90, vjust=1, size = 16))
+  plot_grid(bottleneck.nuB.plot,bottleneck.nuF.plot, align = "h")
+}
+
+if (file.exists("dadi_bottleneckModel.txt")){
+  bottleneck_params <- read.table("dadi_bottleneckModel.txt", header = TRUE)
+  bottleneck_params <- setNames(bottleneck_params, c("vB","vF","tB","tF","LL"))
+  params_df <- melt(bottleneck_params[,1:4], variable.name = "Parameter", value.name = "Value")
+  bottleneck.tauB.plot <- ggplot(data = params_df[201:300,], aes(x=Parameter, y=Value)) + geom_boxplot() + 
+      xlab("") +
+      theme(text = element_text(size=16),
+      axis.text.x = element_text(angle=90, vjust=1, size = 16))
+  bottleneck.tauF.plot <- ggplot(data = params_df[301:400,], aes(x=Parameter, y=Value)) + geom_boxplot() + 
+      xlab("") +
+      theme(text = element_text(size=16),
+      axis.text.x = element_text(angle=90, vjust=1, size = 16))
+  plot_grid(bottleneck.tauB.plot,bottleneck.tauF.plot, align = "h")
+}
+
+if (file.exists("dadi_bottleneckModel.txt")) {
+    summary(bottleneck_params)
+}
+
+```
+
+### Parameter correlations
+
+```{r, echo = FALSE, message = FALSE, warning = FALSE}
+
+if (file.exists("dadi_bottleneckModel.txt")){
+  bottleneck_params <- read.table("dadi_bottleneckModel.txt", header = TRUE)
+  bottleneck_params <- setNames(bottleneck_params, c("vB","vF","tB","tF","LL"))
+  dat <- cor(as.matrix(bottleneck_params[,c("vB","vF","tB","tF","LL")]), use = "pairwise.complete.obs", method = "pearson")
+  dat.m = melt(dat)
+  ggplot(dat.m, aes(x=Var2,y=Var1)) +
+  geom_tile(aes(fill= value)) +
+  geom_text(aes(fill = value, label = round(value, 2)), size=6) +
+  xlab(NULL) + ylab(NULL) +
+  scale_fill_gradient2(high="#b8b8b8", mid="white", low="#b8b8b8", midpoint=0, limits =c(-1,1), guide=FALSE) +
+  theme_bw() +
+  theme(text = element_text(size=16),
+        axis.ticks=element_blank(),
+        panel.background=element_blank(),
+        panel.border=element_blank(),
+        panel.grid.major= element_blank(),
+        #axis.text.x = element_blank(),
+        #axis.text.y = element_blank(),
+        panel.grid.minor= element_blank())
+}
+
+```
+
+### AIC
+
+```{r, echo = FALSE, message = FALSE, warning = FALSE}
+
+if (file.exists("dadi_bottleneckModel.txt")) {
+  bottleneck_params <- read.table("dadi_bottleneckModel.txt", header = TRUE)
+  bottleneck_params <- setNames(bottleneck_params, c("vB","vF","tB","tF","LL"))
+  Bottleneck <- bottleneck_params$LL
+  ll <- cbind(ll, Bottleneck)
+  avg_bottleneck_ll = median(bottleneck_params$LL)
+  cat("Average LL: ", avg_bottleneck_ll, "\n")
+  avg_bottleneck_AIC <- 2 * 4 - 2 * avg_bottleneck_ll
+  cat("Average AIC: ", avg_bottleneck_AIC, "\n")
+  max_bottleneck_ll = max(bottleneck_params$LL)
+  cat("Max LL: ", max_bottleneck_ll, "\n")
+  max_bottleneck_AIC <- 2 * 4 - 2 * max_bottleneck_ll
+  cat("Max AIC: ", max_bottleneck_AIC, "\n")
+  max_bottleneck_ll_idx <- which(bottleneck_params$LL == max_bottleneck_ll)
+  max_bottleneck_nuB <- bottleneck_params$vB[max_bottleneck_ll_idx]
+  cat("vB: ", max_bottleneck_nuB, "\n")
+  max_bottleneck_nuF <- bottleneck_params$vF[max_bottleneck_ll_idx]
+  cat("vF: ", max_bottleneck_nuF, "\n")
+  max_bottleneck_tauB <- bottleneck_params$tB[max_bottleneck_ll_idx]
+  cat("tB: ", max_bottleneck_tauB, "\n")
+  max_bottleneck_tauF <- bottleneck_params$tF[max_bottleneck_ll_idx]
+  cat("tF: ", max_bottleneck_tauF, "\n")
+}
+
+```
+
+## LL
+
+```{r, echo = FALSE, message = FALSE, warning = FALSE}
+
+ll$a <- NULL
+ggplot(data = melt(ll, variable.name = "Model", value.name = "LL"), aes(x = Model, y = LL)) + geom_boxplot(aes(color = Model)) + theme(text = element_text(size=16))
+
+```
