@@ -28,20 +28,20 @@ if (file.exists("observedSFS.txt") && file.exists("neutralModelSFS.txt")) {
   observed_SFS <- read.table("observedSFS.txt")
   neutral_SFS <- read.table("neutralModelSFS.txt")
   expansion_SFS <- rbind(data.frame(Model="Observed", 
-          Count=as.character(as.numeric(observed_SFS$V1)),
+          Count=as.numeric(as.character(observed_SFS$V1)),
           Frequency=as.numeric(row.names(observed_SFS))),
       data.frame(Model="Neutral", 
-          Count= as.character(as.numberic(neutral_SFS$V1)),
+          Count= as.numeric(as.character(neutral_SFS$V1)),
           Frequency=as.numeric(row.names(observed_SFS))))
 }
 
 if (file.exists("expansionModelSFS.txt")) {
   model <- read.table("expansionModelSFS.txt")
   expansion_SFS <- rbind(data.frame(Model = expansion_SFS$Model, 
-      Count=as.character(as.numeric(expansion_SFS$Count)),
+      Count=as.numeric(as.character(expansion_SFS$Count)),
       Frequency=expansion_SFS$Frequency),
   data.frame(Model = "Expansion", 
-      Count = as.character(as.numeric(model$V1)), 
+      Count = as.numeric(as.character(model$V1)), 
       Frequency=as.numeric(row.names(model))))
 
   ggplot(expansion_SFS, aes(x=Frequency, y=Count, fill=Model)) +
