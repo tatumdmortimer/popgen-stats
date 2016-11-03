@@ -1,0 +1,168 @@
+---
+title: "Expansion results"
+author: "Abigail Shockey"
+date: "September 12, 2016"
+output: html_document
+---
+
+```{r, echo = FALSE, message = FALSE, warning = FALSE}
+
+#log scale nu, separate plots for tau
+
+library(ggplot2)
+library(reshape2)
+library(cowplot)
+library(akima)
+library(dplyr)
+ll <- data.frame(a=rep(NA, times = 100))
+                 
+```
+
+### SFS
+
+```{r, echo = FALSE, message = FALSE, warning = FALSE, fig.width = 18, fig.height = 18}
+
+if (file.exists("observedSFS.txt") && file.exists("neutralModelSFS.txt")) {
+  observed_SFS <- read.table("observedSFS.txt")
+  neutral_SFS <- read.table("neutralModelSFS.txt")
+  expansion_SFS <- rbind(data.frame(Model="Observed", 
+          Count=observed_SFS$V1,
+          Frequency=as.numeric(row.names(observed_SFS))),
+      data.frame(Model="Neutral", 
+          Count= neutral_SFS$V1,
+          Frequency=as.numeric(row.names(observed_SFS))))
+}
+
+if (file.exists("expansionModelSFS.txt")) {
+  model <- read.table("expansionModelSFS.txt")
+  expansion_SFS <- rbind(data.frame(Model = expansion_SFS$Model, 
+      Count=expansion_SFS$Count,
+      Frequency=expansion_SFS$Frequency),
+  data.frame(Model = "Expansion", 
+      Count = model$V1, 
+      Frequency=as.numeric(row.names(model))))
+
+  ggplot(expansion_SFS, aes(x=Frequency, y=Count, fill=Model)) +
+  geom_bar(stat="identity", position="dodge", show.legend = TRUE) + 
+  scale_fill_brewer(palette="Paired") +
+  theme_bw() +
+    theme(text = element_text(size=22),
+    axis.text.x = element_text(angle=90, vjust=1),
+    axis.line = element_line(colour = "black"),
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    #        panel.border = element_blank(),
+    panel.background = element_blank())
+}
+
+```
+
+### Parameter Values
+
+```{r, echo = FALSE, message = FALSE, warning = FALSE}
+
+if (file.exists("dadi_expansionModel.txt")) {
+  expansion_params <- read.table("dadi_expansionModel.txt", header = TRUE)
+  expansion_params <- setNames(expansion_params, c("v","t","LL"))
+  params_df <- melt(expansion_params[,1:2], variable.name = "Parameter", value.name = "Value")
+  expansion.nu.plot <- ggplot(data = params_df[1:100,], aes(x=Parameter, y=Value)) + geom_boxplot() +
+      xlab("") +
+      theme(text = element_text(size=16),
+      axis.text.x = element_text(angle=90, vjust=1, size = 16))
+  
+  expansion.tau.plot <- ggplot(data = params_df[101:200,], aes(x=Parameter, y=Value)) + geom_boxplot() + 
+      xlab("") +
+      theme(text = element_text(size=16),
+      axis.text.x = element_text(angle=90, vjust=1, size = 16))
+  
+  plot_grid(expansion.nu.plot, expansion.tau.plot, align = "h")
+}
+
+if (file.exists("dadi_expansionModel.txt")) {
+  expansion_params <- read.table("dadi_expansionModel.txt", header = TRUE)
+  summary(expansion_params)
+  max.nu <- max(expansion_params$nu)
+  max.tau <- max(expansion_params$tau)
+}
+
+```
+
+### Parameter correlation
+
+```{r, echo = FALSE, message = FALSE, warning = FALSE}
+
+if (file.exists("dadi_expansionModel.txt")){
+  expansion_params <- read.table("dadi_expansionModel.txt", header = TRUE)
+  expansion_params <- setNames(expansion_params, c("v","t","LL"))
+  dat <- cor(as.matrix(expansion_params[,c("v","t", "LL")]), use = "pairwise.complete.obs", method = "pearson")
+  dat.m = melt(dat)
+  ggplot(dat.m, aes(x=Var2,y=Var1)) +
+  geom_tile(aes(fill= value)) +
+  geom_text(aes(fill = value, label = round(value, 2)), size=6) +
+  xlab(NULL) + ylab(NULL) +
+  scale_fill_gradient2(high="#b8b8b8", mid="white", low="#b8b8b8", midpoint=0, limits =c(-1,1)) +
+  theme_bw() +
+  theme(text = element_text(size=16),
+        axis.ticks=element_blank(),
+        panel.background=element_blank(),
+        panel.border=element_blank(),
+        panel.grid.major= element_blank(),
+        #axis.text.x = element_blank(),
+        #axis.text.y = element_blank(),
+        panel.grid.minor= element_blank())
+}
+
+```
+
+### Likelihood surface
+
+```{r, echo = FALSE, message = FALSE, warning = FALSE, fig.width = 18, fig.height = 18}
+
+if (file.exists("likelihood_grid_expansion.txt")) {
+  param_grid_dadi <- read.table("likelihood_grid_expansion.txt", header=TRUE)
+  interpdf <-interp2xyz(interp(x=param_grid_dadi$nu, y=param_grid_dadi$T, z=param_grid_dadi$LL, duplicate="mean"), data.frame=TRUE)
+  interpdf %>%
+  filter(!is.na(z)) %>%
+  tbl_df() %>%
+  ggplot(aes(x = x, y = y, z = z, fill = z)) + 
+  geom_tile() + 
+  stat_contour(colour = "black", bins = 500) + 
+  scale_fill_gradient(low="dark green", high="white") +
+  theme_bw()
+}
+
+```
+
+### AIC
+
+```{r, echo = FALSE, message = FALSE, warning = FALSE}
+
+if (file.exists("dadi_expansionModel.txt")){
+  expansion_params <- read.table("dadi_expansionModel.txt", header = TRUE)
+  expansion_params <- setNames(expansion_params, c("v","t","LL"))
+  Expansion <- expansion_params$LL
+  ll <- cbind(ll, Expansion)
+  avg_expansion_ll <- median(expansion_params$LL)
+  cat("Average LL: ", avg_expansion_ll, "\n")
+  avg_expansion_AIC <- 2 * 2 - 2 * avg_expansion_ll
+  cat("Average AIC: ", avg_expansion_AIC, "\n")
+  max_expansion_ll <- max(expansion_params$LL)
+  cat("Max LL: ", max_expansion_ll, "\n")
+  max_expansion_AIC <- 2 * 2 - 2 * max_expansion_ll
+  cat("Max AIC: ", max_expansion_AIC, "\n")
+  max_expansion_ll_idx <- which(expansion_params$LL == max_expansion_ll)
+  max_expansion_nu <- expansion_params$v[max_expansion_ll_idx]
+  cat("v: ", max_expansion_nu, "\n")
+  max_expansion_tau <- expansion_params$t[max_expansion_ll_idx]
+  cat("t: ", max_expansion_tau, "\n")
+}
+
+```
+
+## LL
+
+```{r, echo = FALSE, message = FALSE, warning = FALSE}
+
+ll$a <- NULL
+ggplot(data = melt(ll, variable.name = "Model", value.name = "LL"), aes(x = Model, y = LL)) + geom_boxplot(aes(color = Model)) + theme(text = element_text(size=16))
+
