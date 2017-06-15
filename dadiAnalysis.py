@@ -103,11 +103,11 @@ print "Expansion model log-likelihood: %f" % expansion_ll
 expansion_p0 = dadi.Misc.perturb_params(expansion_params, fold=1,
                                         upper_bound = expansion_upper_bound)
 
-expansion_popt = dadi.Inference.optimize_log(expansion_p0, data, 
+expansion_popt = dadi.Inference.optimize_log(expansion_p0, data,
                                             expansion_func_ex, pts_l,
                                             lower_bound = expansion_lower_bound,
                                             upper_bound = expansion_upper_bound,
-                                            maxiter=3)
+                                            maxiter=100)
 print "Optimized parameters", repr(expansion_popt)
 expansion_model = expansion_func_ex(expansion_popt, ns, pts_l)
 expansion_ll_opt = dadi.Inference.ll_multinom(expansion_model, data)
@@ -138,7 +138,7 @@ growth_popt = dadi.Inference.optimize_log(growth_p0, data,
                                             growth_func_ex, pts_l,
                                             lower_bound = growth_lower_bound,
                                             upper_bound = growth_upper_bound,
-                                            maxiter=3)
+                                            maxiter=100)
 
 print "Optimized parameters", repr(growth_popt)
 growth_model = growth_func_ex(growth_popt, ns, pts_l)
@@ -170,7 +170,7 @@ bottleneck_popt = dadi.Inference.optimize_log(bottleneck_p0, data,
                                             bottleneck_func_ex, pts_l,
                                             lower_bound = bottleneck_lower_bound,
                                             upper_bound = bottleneck_upper_bound,
-                                            maxiter=3)
+                                            maxiter=100)
 print "Optimized parameters", repr(bottleneck_popt)
 bottleneck_model = bottleneck_func_ex(bottleneck_popt, ns, pts_l)
 bottleneck_ll_opt = dadi.Inference.ll_multinom(bottleneck_model, data)
@@ -201,7 +201,7 @@ bottlegrowth_popt = dadi.Inference.optimize_log(bottlegrowth_p0, data,
                                             bottlegrowth_func_ex, pts_l,
                                             lower_bound = bottlegrowth_lower_bound,
                                             upper_bound = bottlegrowth_upper_bound,
-                                            maxiter=3)
+                                            maxiter=100)
 print "Optimized parameters", repr(bottlegrowth_popt)
 bottlegrowth_model = bottlegrowth_func_ex(bottlegrowth_popt, ns, pts_l)
 bottlegrowth_ll_opt = dadi.Inference.ll_multinom(bottlegrowth_model, data)
