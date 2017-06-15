@@ -26,7 +26,8 @@ def get_args():
 
 def read_VCFs(strain):
     variantDict = {}
-    file_endings = ["_D.vcf", "_INV.vcf", "_SI.vcf", "_TD.vcf"]
+    file_endings = ["_D.recode.vcf", "_INV.recode.vcf", "_SI.recode.vcf",
+    "_TD.recode.vcf"]
     for ext in file_endings:
         with open(strain + ext, "r") as infile:
             for line in infile:
@@ -67,7 +68,7 @@ def analyze_variants(catDict, strain_variant_dict):
                 allVariantDict[c] = var
             else:
                 sharedVariantDict[c] = sharedVariantDict[c] & var
-                allVariantDict[c] = sharedVariantDict[c] | var
+                allVariantDict[c] = allVariantDict[c] | var
     ##Find variants that are unique to each category
     uniqueVariantDict = {}
     for c in catDict:
