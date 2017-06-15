@@ -19,7 +19,7 @@ def is_file(filename):
 def get_args():
     """Parse command line arguments"""
     parser = argparse.ArgumentParser(description='Pairwise Differences')
-    parser.add_argument("vcf", help="VCF created from whole genome alignment", 
+    parser.add_argument("vcf", help="VCF created from whole genome alignment",
         type=is_file)
     return parser.parse_args()
 
@@ -28,10 +28,10 @@ def parse_vcf(vcf):
     variantDict = defaultdict(list)
     inFile = open(vcf, 'r')
     for i,line in enumerate(inFile):
-        if i == 2:
+        if i == 3:
             line = line.strip().split()
             strains = line[9:]
-        elif i > 2:
+        elif i > 3:
             line = line.strip().split()
             variants = line[9:]
             for j,v in enumerate(variants):
