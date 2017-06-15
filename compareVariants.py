@@ -47,11 +47,11 @@ def analyze_variants(catDict, catSet, vcf):
     variantDict = defaultdict(list)
     inFile = open(vcf, 'r')
     for i,line in enumerate(inFile):
-        if i == 2:
+        if i == 3:
             line = line.strip().split()
             strains = line[9:]
             categories = [catDict[strain] for strain in strains]
-        elif i > 2:
+        elif i > 3:
             tempDict = defaultdict(set)
             line = line.strip().split()
             position = line[1]
