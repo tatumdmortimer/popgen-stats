@@ -100,7 +100,7 @@ plot_dadi_SFS.R
 
 ### siteFrequencySpectra.py
 Reads vcf that has been annotated with snpEff. The outgroup should be the
-reference sequence in the VCF. Outputs synonymous, nonsynonymous, and combined
+reference sequence in the VCF. Outputs synonymous, nonsynonymous, nonsense, stop lost, intergenic, and combined
 site frequency spectra.
 
 Current Versions: Python 2.7.6

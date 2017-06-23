@@ -37,6 +37,8 @@ def calc_freqs(vcfFile, numStrains):
     nonsynonymous = [0]*numStrains
     synonymous = [0]*numStrains
     intergenic = [0]*numStrains
+    nonsense = [0]*numStrains
+    stop_lost = [0]*numStrains
     non_biallelic = 0
     vcf = open(vcfFile, 'r')
     for line in vcf:
@@ -56,26 +58,33 @@ def calc_freqs(vcfFile, numStrains):
             sys.exit()
         alleles = line[10:]
         freq = len(alleles) - alleles.count("0")
-        if "synonymous" in INFO:
+        if "synonymous" in INFO or "stop_retained" in INFO:
             synonymous[freq-1] += 1
         elif "missense" in INFO:
             nonsynonymous[freq-1] += 1
+        elif "stop_gained" in INFO:
+            nonsense[freq-1] += 1
+        elif "stop_lost" in INFO:
+            stop_lost[freq-1] += 1
         else:
             intergenic[freq-1] += 1
     vcf.close()
     print("{0} SNPs had multiple alternate alleles".format(non_biallelic))
-    return synonymous, nonsynonymous, intergenic
+    return synonymous, nonsynonymous, nonsense, stop_lost, intergenic
 
 
-def write_outfile(s, ns, ig):
+def write_outfile(s, ns, n, sl, ig):
     outfile = open("sfs.txt", "w")
-    outfile.write("Frequency\tSynonymous\tNonsynonymous\tIntergenic\tCombined\n")
+    outfile.write(
+        "Frequency\tSynonymous\tNonsynonymous\tNonsense\tStopLost\tIntergenic\tCombined\n")
     for i in range(len(s)):
-        outfile.write("%i\t%i\t%i\t%i\t%i\n" % (i+1,
+        outfile.write("%i\t%i\t%i\t%i\t%i\t%i\t%i\n" % (i+1,
                                                 s[i],
                                                 ns[i],
+                                                n[i],
+                                                sl[i],
                                                 ig[i],
-                                                s[i] + ns[i] + ig[i]))
+                                                s[i] + ns[i] + n[i] + ig[i]))
 
 
 vcfFile, numStrains = get_arguments(sys.argv[1:])
@@ -84,5 +93,5 @@ if vcfFile is None or numStrains is None:
     usage()
     sys.exit()
 
-synonymous, nonsynonymous,intergenic = calc_freqs(vcfFile, numStrains)
-write_outfile(synonymous, nonsynonymous, intergenic)
+synonymous, nonsynonymous, nonsense, stop_lost, intergenic = calc_freqs(vcfFile, numStrains)
+write_outfile(synonymous, nonsynonymous, nonsense, stop_lost, intergenic)
