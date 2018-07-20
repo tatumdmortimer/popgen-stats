@@ -10,8 +10,6 @@ from datetime import datetime
 # a summary of the synonymous and nonsynonymous variants
 ################################################################################
 
-ORTHOMCL_PATH = "/opt/PepPrograms/orthomclSoftware-v2.0.9/bin/"
-
 class FullPaths(argparse.Action):
     """Expand user- and relative-paths"""
     def __call__(self, parser, namespace, values, option_string=None):
